@@ -311,7 +311,7 @@ export default function Home() {
                   Mobile Platform & DevSecOps Engineer
                 </h1>
 
-                {/* Subheadline */}
+                {/* Sub headline */}
                 <p className="text-lg md:text-xl text-gray-300 mb-6 max-w-3xl">
                   I build, secure, and scale production mobile platforms — from
                   cross-platform apps to cloud infrastructure, CI/CD pipelines,
@@ -398,7 +398,7 @@ export default function Home() {
               viewport={{ once: true }}
               variants={fadeInUp}
               transition={{ duration: 0.6 }}
-              className="text-4xl md:text-5xl font-extrabold mb-8 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent"
+              className="text-4xl md:text-5xl font-extrabold mb-8 bg-linear-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent"
             >
               About
             </motion.h2>
@@ -445,9 +445,9 @@ export default function Home() {
               transition={{ duration: 1.2 }}
               className="flex items-center justify-center gap-4 mb-8 text-gray-400"
             >
-              <span className="w-16 h-[1px] bg-gray-600" />
+              <span className="w-16 h-px bg-gray-600" />
               <span className="text-lg">✦</span>
-              <span className="w-16 h-[1px] bg-gray-600" />
+              <span className="w-16 h-px bg-gray-600" />
             </motion.div>
 
             {/* Interest Tags */}
@@ -535,7 +535,7 @@ export default function Home() {
               variants={fadeInUp}
               transition={{ duration: 0.6 }}
               className="text-center text-4xl md:text-5xl font-extrabold mb-6
-               bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500
+               bg-linear-to-r from-cyan-400 via-blue-500 to-purple-500
                bg-clip-text text-transparent"
             >
               Skills
@@ -634,7 +634,7 @@ export default function Home() {
               viewport={{ once: true }}
               variants={fadeInUp}
               transition={{ duration: 0.6 }}
-              className="text-4xl md:text-5xl font-extrabold mb-12 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent"
+              className="text-4xl md:text-5xl font-extrabold mb-12 bg-linear-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent"
             >
               Projects
             </motion.h2>
@@ -662,7 +662,7 @@ export default function Home() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-6 flex flex-col flex-grow text-left">
+                  <div className="p-6 flex flex-col grow text-left">
                     <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
 
                     {/* Description */}
@@ -750,7 +750,7 @@ export default function Home() {
               viewport={{ once: true }}
               variants={fadeInUp}
               transition={{ duration: 0.6 }}
-              className="text-4xl md:text-5xl font-extrabold mb-12 bg-gradient-to-r from-pink-400 via-red-500 to-yellow-500 bg-clip-text text-transparent"
+              className="text-4xl md:text-5xl font-extrabold mb-12 bg-linear-to-r from-pink-400 via-red-500 to-yellow-500 bg-clip-text text-transparent"
             >
               Blog
             </motion.h2>
@@ -779,7 +779,7 @@ export default function Home() {
               viewport={{ once: true }}
               variants={fadeInUp}
               transition={{ duration: 0.6 }}
-              className="text-4xl md:text-5xl font-extrabold mb-12 bg-gradient-to-r from-green-400 via-cyan-500 to-blue-500 bg-clip-text text-transparent"
+              className="text-4xl md:text-5xl font-extrabold mb-12 bg-linear-to-r from-green-400 via-cyan-500 to-blue-500 bg-clip-text text-transparent"
             >
               Let’s Connect
             </motion.h2>
@@ -861,7 +861,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 w-full bg-gray-100 dark:bg-gray-900 py-4 shadow-lg z-50">
         <div className="flex justify-center items-center">
-          <p className="text-sm font-medium bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent text-center">
+          <p className="text-sm font-medium bg-linear-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent text-center">
             © {new Date().getFullYear()} Julius “Kash” Gachuhi. All rights
             reserved.
           </p>
