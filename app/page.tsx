@@ -142,6 +142,23 @@ export default function Home() {
             </li>
             <li>
               <span className="font-semibold">
+                Cloud Security & SOC 2 Controls:
+              </span>
+              Enforced IAM least privilege policies across EC2, Lambda, and
+              application roles. Enabled CloudTrail in all AWS regions with
+              encrypted S3 storage. Configured GuardDuty, Security Hub, AWS
+              Config, and Inspector for compliance monitoring and threat
+              detection.
+            </li>
+
+            <li>
+              <span className="font-semibold">Infrastructure Hardening:</span>
+              Enforced IMDSv2 on EC2 instances, enabled S3 Block Public Access,
+              versioning, lifecycle policies, and configured AWS WAF for rate
+              limiting and application-layer protection.
+            </li>
+            <li>
+              <span className="font-semibold">
                 Reliability & Real-Time Systems:
               </span>{" "}
               Integrated WebSockets and AI APIs to support real-time
@@ -312,10 +329,14 @@ export default function Home() {
                 </h1>
 
                 {/* Sub headline */}
-                <p className="text-lg md:text-xl text-gray-300 mb-6 max-w-3xl">
-                  I build, secure, and scale production mobile platforms — from
-                  cross-platform apps to cloud infrastructure, CI/CD pipelines,
-                  and application security.
+                <p className="text-lg md:text-xl text-gray-300 mb-4 max-w-3xl">
+                  Building secure, SOC 2–aligned systems on AWS — from
+                  cross-platform applications to cloud infrastructure, CI/CD
+                  automation, and application security.
+                </p>
+
+                <p className="text-sm text-cyan-400 font-medium mb-6">
+                  Open to Remote US & EU Opportunities
                 </p>
 
                 {/* Typewriter */}
@@ -335,7 +356,7 @@ export default function Home() {
                   </a>
 
                   <a
-                    href="/pdf/Kash_Resume.pdf"
+                    href="/pdf/Julius_Gachuhi_Resume.pdf"
                     download
                     className="inline-flex items-center px-6 py-3 border border-red-500 rounded-lg text-white hover:bg-red-500 transition"
                     aria-label="Download CV"
@@ -387,6 +408,31 @@ export default function Home() {
             ))}
           </div>
 
+          <section className="bg-gray-950 text-white py-10 px-6 border-t border-gray-800">
+            <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
+              <div>
+                <p className="text-2xl font-bold text-cyan-400">6 Months</p>
+                <p className="text-sm text-gray-400">Product Delivery</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-cyan-400">-1.5s</p>
+                <p className="text-sm text-gray-400">Load Time Reduction</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-cyan-400">+32%</p>
+                <p className="text-sm text-gray-400">User Retention</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-cyan-400">SOC 2</p>
+                <p className="text-sm text-gray-400">Readiness Contributor</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-cyan-400">AWS</p>
+                <p className="text-sm text-gray-400">Security Controls</p>
+              </div>
+            </div>
+          </section>
+
           <section
             id="about"
             className="relative py-24 px-6 bg-black text-white text-center"
@@ -433,7 +479,8 @@ export default function Home() {
               transition={{ duration: 1 }}
               className="text-lg md:text-xl text-gray-300 mb-6"
             >
-              Little about me. Also, it’s not that hard to find me.
+              I design and operate secure mobile platforms used in production
+              environments.
             </motion.p>
 
             {/* Divider */}
@@ -596,6 +643,38 @@ export default function Home() {
                     <div className="text-3xl">{skill.icon}</div>
                     <p className="text-gray-200 font-medium">{skill.name}</p>
                   </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* CLOUD SECURITY & COMPLIANCE */}
+            <div className="max-w-6xl mx-auto mt-20">
+              <h3 className="text-sm uppercase tracking-widest text-emerald-400 mb-8">
+                Cloud Security & Compliance
+              </h3>
+
+              <div className="flex flex-wrap gap-4">
+                {[
+                  "AWS IAM (Least Privilege)",
+                  "CloudTrail (All Regions)",
+                  "AWS Config",
+                  "GuardDuty",
+                  "Security Hub",
+                  "S3 Encryption (SSE-KMS / AES-256)",
+                  "IMDSv2 Enforcement",
+                  "AWS WAF",
+                  "AWS Inspector",
+                  "Dependency Scanning (Snyk / OWASP)",
+                  "CI/CD Governance",
+                  "SOC 2 Controls",
+                  "Logging & Monitoring Architecture",
+                ].map((item) => (
+                  <span
+                    key={item}
+                    className="px-4 py-2 rounded-full border border-emerald-500/40 text-sm text-emerald-300"
+                  >
+                    {item}
+                  </span>
                 ))}
               </div>
             </div>
@@ -763,8 +842,11 @@ export default function Home() {
               transition={{ duration: 0.7 }}
               className="text-lg text-gray-400 max-w-2xl mx-auto"
             >
-              I’m currently writing articles on mobile development, DevSecOps,
-              and cybersecurity. Stay tuned — new posts coming soon! 🚀
+              Upcoming technical articles: - Implementing IMDSv2 and EC2
+              Hardening in AWS - Designing SOC 2 Logging & Monitoring
+              Architectures - Securing Cross-Platform Authentication with Auth0
+              & OAuth - Building CI/CD Pipelines with Integrated Security
+              Scanning
             </motion.p>
           </section>
 
@@ -841,22 +923,6 @@ export default function Home() {
           </section>
         </section>
       </main>
-      {/* Floating WhatsApp Support */}
-      <div className="relative group">
-        <a
-          href={`https://wa.me/${whatsappNumber}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed right-6 z-50 w-16 h-16 bg-green-500 hover:bg-green-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl animate-pulse transition-all duration-300"
-          style={{ bottom: "25%" }}
-          aria-label="Chat on WhatsApp"
-        >
-          <FaWhatsapp />
-        </a>
-        <span className="absolute bottom-20 right-0 w-max px-3 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
-          Chat with me on WhatsApp
-        </span>
-      </div>
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 w-full bg-gray-100 dark:bg-gray-900 py-4 shadow-lg z-50">
