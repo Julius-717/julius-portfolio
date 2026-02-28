@@ -1,0 +1,98 @@
+---
+title: "Implementing IMDSv2 and EC2 Hardening in AWS"
+slug: "imdsv2-ec2-hardening"
+date: "2024-03-01"
+summary: "How I enforced IMDSv2 across all EC2 instances, eliminated metadata exposure risk, and contributed this to Enquire AI's SOC 2 security controls."
+tags: ["AWS", "EC2", "DevSecOps", "SOC 2", "Cloud Security"]
+readTime: "6 min read"
+---
+
+## The Problem
+
+The AWS Instance Metadata Service (IMDS) v1 allows any process running on an EC2
+instance — including malicious code from SSRF attacks — to query sensitive instance
+metadata, including IAM role credentials, without authentication.
+
+In a production environment handling user data and operating under SOC 2 controls,
+this is an unacceptable exposure.
+
+## What IMDSv2 Changes
+
+IMDSv2 requires a session-oriented flow: the caller must first obtain a session token
+via a PUT request, then use that token for all subsequent metadata queries.
+This single change eliminates the SSRF-to-credential-theft attack vector entirely.
+
+```bash
+# IMDSv1 — no auth required (dangerous)
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
+
+# IMDSv2 — session token required
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/
+```
+
+## How I Enforced It
+
+### 1. Enforce IMDSv2 on all running instances
+
+```bash
+aws ec2 modify-instance-metadata-options \
+  --instance-id i-XXXXXXXXXXXXXXXXX \
+  --http-tokens required \
+  --http-endpoint enabled \
+  --region us-east-1
+```
+
+### 2. Enforce IMDSv2 on all new instances via Launch Template
+
+```json
+{
+  "MetadataOptions": {
+    "HttpTokens": "required",
+    "HttpEndpoint": "enabled",
+    "HttpPutResponseHopLimit": 1
+  }
+}
+```
+
+Setting `HttpPutResponseHopLimit` to `1` ensures the token cannot be
+forwarded through container layers — critical in environments running Docker
+or ECS on EC2.
+
+### 3. Detect non-compliant instances with AWS Config
+
+I created a custom AWS Config rule to flag any instance not enforcing
+`HttpTokens: required`:
+
+```json
+{
+  "ConfigRuleName": "ec2-imdsv2-required",
+  "Source": {
+    "Owner": "AWS",
+    "SourceIdentifier": "EC2_IMDSV2_REQUIRED"
+  }
+}
+```
+
+This rule runs continuously and alerts via Security Hub if any instance
+falls out of compliance — for example after a new deployment that missed
+the launch template.
+
+## SOC 2 Relevance
+
+This control maps directly to **CC6.1** (logical access controls) and
+**CC6.6** (protection against threats from outside system boundaries) in
+the SOC 2 Trust Services Criteria.
+
+Documenting the enforcement mechanism, the Config rule, and the remediation
+playbook was part of the evidence package submitted during Enquire AI's
+SOC 2 readiness review.
+
+## Outcome
+
+- All EC2 instances enforced IMDSv2 within one sprint
+- AWS Config rule running continuously with zero violations since deployment
+- Control documented and included in SOC 2 evidence package
+- Eliminated SSRF-to-credential-theft attack vector across the production environment
