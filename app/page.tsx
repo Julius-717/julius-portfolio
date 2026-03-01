@@ -246,7 +246,7 @@ export default function Home() {
             </span>
           </a>
           <div className="hidden md:flex space-x-6 items-center">
-            {["about", "skills", "projects", "blog", "contact"].map((item) => (
+            {["about", "skills", "projects", "contact"].map((item) => (
               <a
                 key={item}
                 href={`#${item}`}
@@ -287,7 +287,7 @@ export default function Home() {
         </nav>
         {menuOpen && (
           <div className="md:hidden bg-[#FAFAF9] dark:bg-[#0A0A0F] border-t border-[#E5E7EB] dark:border-[#1E1E2E] px-6 py-4 space-y-4">
-            {["about", "skills", "projects", "blog", "contact"].map((item) => (
+            {["about", "skills", "projects", "contact"].map((item) => (
               <a
                 key={item}
                 href={`#${item}`}
@@ -859,6 +859,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Blog section — commented out until blog content is ready
         <section
           id="blog"
           className="relative py-24 px-6 bg-[#FAFAF9] dark:bg-[#0A0A0F] text-[#111827] dark:text-[#F1F5F9] text-center"
@@ -905,6 +906,7 @@ export default function Home() {
             ))}
           </motion.ul>
         </section>
+        */}
 
         <section
           id="contact"
