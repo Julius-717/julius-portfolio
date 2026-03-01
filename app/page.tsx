@@ -820,35 +820,61 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Single featured card */}
-            <Link
-              href="/case-studies/imdsv2-ec2-hardening"
-              className="block group p-8 bg-white dark:bg-[#111118]
-                         border border-[#E5E7EB] dark:border-[#1E1E2E]
-                         rounded-2xl hover:border-cyan-500 dark:hover:border-cyan-500
-                         transition-all duration-200"
-            >
-              <div className="flex flex-wrap gap-2 mb-3">
-                {["AWS", "EC2", "DevSecOps", "SOC 2"].map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 text-xs rounded-full bg-[#F3F4F6] dark:bg-[#1E1E2E] text-[#374151] dark:text-[#E2E8F0]"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <h3 className="text-xl font-bold mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                Implementing IMDSv2 and EC2 Hardening in AWS
-              </h3>
-              <p className="text-[#6B7280] dark:text-[#94A3B8]">
-                How I enforced IMDSv2 across all EC2 instances, eliminated metadata
-                exposure risk, and contributed this to Enquire AI&apos;s SOC 2 security controls.
-              </p>
-              <p className="text-sm text-[#9CA3AF] dark:text-[#64748B] mt-4">
-                2024-03-01 · 6 min read
-              </p>
-            </Link>
+            {/* Featured cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  href: "/case-studies/iam-least-privilege-controls",
+                  tags: ["AWS", "IAM", "SOC 2"],
+                  title: "Enforcing IAM Least Privilege and Role-Based Access Across AWS",
+                  summary: "How I replaced wildcard IAM policies with scoped roles for EC2, Lambda, and applications — including password policy enforcement for SOC 2 CC6.1.",
+                  meta: "2024-02-15 · 7 min read",
+                },
+                {
+                  href: "/case-studies/s3-security-hardening",
+                  tags: ["AWS", "S3", "Data Security"],
+                  title: "S3 Security Hardening: Encryption, Versioning, and Audit Logging",
+                  summary: "How I enforced SSE-KMS encryption, blocked public access, enabled versioning, and turned on access logging across all S3 buckets for SOC 2 data controls.",
+                  meta: "2024-02-20 · 8 min read",
+                },
+                {
+                  href: "/case-studies/cloudtrail-cloudwatch-logging",
+                  tags: ["CloudTrail", "Security Hub", "SOC 2"],
+                  title: "Building a SOC 2 Logging Architecture with CloudTrail and Security Hub",
+                  summary: "How I built centralized logging across all AWS regions with CloudTrail, CloudWatch alerting on IAM changes, GuardDuty, and a real-time Security Hub compliance dashboard.",
+                  meta: "2024-03-10 · 9 min read",
+                },
+              ].map((card) => (
+                <Link
+                  key={card.href}
+                  href={card.href}
+                  className="block group p-6 bg-white dark:bg-[#111118]
+                             border border-[#E5E7EB] dark:border-[#1E1E2E]
+                             rounded-2xl hover:border-cyan-500 dark:hover:border-cyan-500
+                             transition-all duration-200 flex flex-col"
+                >
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {card.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 text-xs rounded-full bg-[#F3F4F6] dark:bg-[#1E1E2E] text-[#374151] dark:text-[#E2E8F0]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="text-base font-bold mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors leading-snug">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed grow">
+                    {card.summary}
+                  </p>
+                  <p className="text-xs text-[#9CA3AF] dark:text-[#64748B] mt-4">
+                    {card.meta}
+                  </p>
+                </Link>
+              ))}
+            </div>
 
             <Link
               href="/case-studies"
