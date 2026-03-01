@@ -1,0 +1,171 @@
+---
+title: "Enforcing IAM Least Privilege and Role-Based Access Across AWS"
+slug: "iam-least-privilege-controls"
+date: "2024-02-15"
+summary: "How I replaced overly permissive IAM policies with least privilege roles for EC2, Lambda, and applications — and enforced a strong password policy as part of SOC 2 IAM controls."
+tags: ["AWS", "IAM", "DevSecOps", "SOC 2", "Cloud Security"]
+readTime: "7 min read"
+---
+
+## The Problem
+
+When I began the SOC 2 readiness work at Enquire AI, the IAM landscape had accumulated significant drift. Several roles used wildcard actions (`*`) with wildcard resources (`*`) — effectively granting full access to any service the role touched. This is a common pattern in early-stage infrastructure: it gets things working, and no one revisits it.
+
+The risk is concrete. A compromised Lambda function running under an overly broad role can enumerate S3 buckets, invoke other Lambdas, write to DynamoDB, or exfiltrate data from RDS — none of which it needs to do its actual job. Under SOC 2 CC6.1, logical access must be restricted to the minimum necessary. A wildcard policy fails that control by definition.
+
+## Auditing Existing Policies
+
+The first step was a full audit of what was actually in place. I used `aws iam get-account-authorization-details` to dump every policy, role, and attachment into a single JSON file for review:
+
+```bash
+aws iam get-account-authorization-details \
+  --filter Role \
+  --output json > iam-audit.json
+```
+
+I then scanned the output for policies containing `"Action": "*"` or `"Resource": "*"`. The results identified three categories of violations:
+
+1. **EC2 instance profiles** with `AmazonEC2FullAccess` attached
+2. **Lambda execution roles** with `AdministratorAccess` attached
+3. **Application service roles** with broad `s3:*` and `secretsmanager:*` permissions on `*` resources
+
+## Scoping IAM Roles by Service
+
+### EC2 Instance Profiles
+
+Before — the instance profile role had this attached:
+
+```json
+{
+  "Effect": "Allow",
+  "Action": "*",
+  "Resource": "*"
+}
+```
+
+After — scoped to only what the instance actually needed (SSM access for patching and CloudWatch for log shipping):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:UpdateInstanceInformation",
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:OpenControlChannel",
+        "ec2messages:GetMessages",
+        "ec2messages:SendReply"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogStreams"
+      ],
+      "Resource": "arn:aws:logs:REGION:ACCOUNT-ID:log-group:/ec2/*"
+    }
+  ]
+}
+```
+
+### Lambda Execution Roles
+
+Each Lambda function got its own dedicated execution role scoped to the specific resources it interacts with. A function that reads from one S3 bucket and writes to one DynamoDB table gets exactly those two permissions — nothing else:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": "arn:aws:s3:::YOUR-BUCKET-NAME/uploads/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["dynamodb:PutItem", "dynamodb:GetItem"],
+      "Resource": "arn:aws:dynamodb:REGION:ACCOUNT-ID:table/YOUR-TABLE-NAME"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:REGION:ACCOUNT-ID:log-group:/aws/lambda/*"
+    }
+  ]
+}
+```
+
+I created roles using the CLI to keep the process auditable and repeatable:
+
+```bash
+aws iam create-role \
+  --role-name enquire-lambda-processor-role \
+  --assume-role-policy-document file://trust-policy.json
+
+aws iam put-role-policy \
+  --role-name enquire-lambda-processor-role \
+  --policy-name scoped-processor-policy \
+  --policy-document file://processor-policy.json
+```
+
+### Application Service Roles
+
+The application role previously had `secretsmanager:*` on `*`. I scoped it to `GetSecretValue` on the specific secret ARNs the application uses:
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["secretsmanager:GetSecretValue"],
+  "Resource": [
+    "arn:aws:secretsmanager:REGION:ACCOUNT-ID:secret:prod/enquire/db-*",
+    "arn:aws:secretsmanager:REGION:ACCOUNT-ID:secret:prod/enquire/api-*"
+  ]
+}
+```
+
+## Enforcing the Password Policy
+
+For IAM users (used for CI/CD service accounts and emergency break-glass access), I enforced a strong account-wide password policy:
+
+```bash
+aws iam update-account-password-policy \
+  --minimum-password-length 14 \
+  --require-symbols \
+  --require-numbers \
+  --require-uppercase-characters \
+  --require-lowercase-characters \
+  --allow-users-to-change-password \
+  --max-password-age 90 \
+  --password-reuse-prevention 12
+```
+
+This sets a 14-character minimum, requires complexity, rotates every 90 days, and blocks reuse of the last 12 passwords. IAM users outside this policy generate Config findings, which feed into the Security Hub dashboard.
+
+## SOC 2 Relevance
+
+This work maps to two Trust Services Criteria:
+
+**CC6.1** — *The entity implements logical access security software, infrastructure, and architectures over protected information assets to protect them from security events to meet the entity's objectives.* Scoped IAM roles with least privilege directly satisfies this control.
+
+**CC6.2** — *Prior to issuing system credentials and granting system access, the entity registers and authorizes new internal and external users.* The password policy enforcement and documented role creation process provides the procedural evidence for this control.
+
+Both controls required documented policies, not just implementation — the role creation scripts and policy JSON files were included in the SOC 2 evidence package.
+
+## Outcome
+
+- Eliminated all wildcard IAM policies across EC2, Lambda, and application roles
+- Created dedicated, scoped execution roles for each Lambda function and EC2 instance profile
+- Reduced the blast radius of any single compromised credential to the minimum scope needed for that service
+- Enforced a 14-character password policy with 90-day rotation and 12-password reuse prevention
+- All roles and policies documented and submitted as SOC 2 CC6.1 / CC6.2 evidence
+- Zero IAM-related findings in the subsequent AWS Config compliance scan

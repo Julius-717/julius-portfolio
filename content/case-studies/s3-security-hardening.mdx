@@ -1,0 +1,180 @@
+---
+title: "S3 Security Hardening: Encryption, Versioning, Access Control, and Audit Logging"
+slug: "s3-security-hardening"
+date: "2024-02-20"
+summary: "How I hardened all S3 buckets with AES-256/SSE-KMS encryption, blocked public access, enabled versioning and lifecycle policies, and turned on access logging for SOC 2 data security controls."
+tags: ["AWS", "S3", "DevSecOps", "SOC 2", "Data Security"]
+readTime: "8 min read"
+---
+
+## The Problem
+
+During the SOC 2 readiness audit at Enquire AI, I found S3 buckets in configurations that would fail almost any compliance review. Public access was not universally blocked — some buckets had `BlockPublicAcls` disabled from early development work that was never tightened. Encryption was inconsistent: some buckets used SSE-S3, others had no default encryption set at all. There was no versioning on data buckets, meaning accidental deletions or overwrites were unrecoverable. And there was no S3 access logging, so we had no audit trail for who accessed or modified what.
+
+Under SOC 2 CC6.1 and CC6.7, data at rest must be protected and access must be logged. None of those conditions were fully met.
+
+## Step 1: Block Public Access on All Buckets
+
+The first and most urgent fix was ensuring no bucket could be made public — either through ACLs or bucket policies. I ran this against every bucket in the account:
+
+```bash
+aws s3api put-public-access-block \
+  --bucket YOUR-BUCKET-NAME \
+  --public-access-block-configuration \
+    "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+```
+
+I also enabled the account-level S3 Block Public Access setting to prevent any future bucket from bypassing this:
+
+```bash
+aws s3control put-public-access-block \
+  --account-id ACCOUNT-ID \
+  --public-access-block-configuration \
+    "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+```
+
+The account-level setting acts as a guardrail — even if someone creates a new bucket and tries to enable public access, it is blocked at the account layer.
+
+## Step 2: Enforce SSE-KMS Encryption
+
+I set SSE-KMS as the default encryption for all buckets, using a KMS key scoped to the production environment:
+
+```bash
+aws s3api put-bucket-encryption \
+  --bucket YOUR-BUCKET-NAME \
+  --server-side-encryption-configuration '{
+    "Rules": [{
+      "ApplyServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms",
+        "KMSMasterKeyID": "arn:aws:kms:REGION:ACCOUNT-ID:key/YOUR-KMS-KEY-ID"
+      },
+      "BucketKeyEnabled": true
+    }]
+  }'
+```
+
+Default encryption alone is not sufficient — it only applies to new objects. To ensure nothing unencrypted could be written, I added a bucket policy that explicitly denies any `PutObject` request that does not specify server-side encryption:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyUnencryptedObjectUploads",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::YOUR-BUCKET-NAME/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+      }
+    },
+    {
+      "Sid": "DenyNonSecureTransport",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::YOUR-BUCKET-NAME",
+        "arn:aws:s3:::YOUR-BUCKET-NAME/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    }
+  ]
+}
+```
+
+The second statement denies any S3 API call over HTTP (non-TLS). Every request must use HTTPS, and every object must be encrypted with KMS.
+
+## Step 3: Enable Versioning and Lifecycle Policies
+
+For data buckets containing user uploads and application state, I enabled versioning so that overwrites and deletes are recoverable:
+
+```bash
+aws s3api put-bucket-versioning \
+  --bucket YOUR-BUCKET-NAME \
+  --versioning-configuration Status=Enabled
+```
+
+Versioning without a lifecycle policy turns into unbounded storage cost. I set a rule to transition non-current versions to S3 Glacier after 90 days, and permanently expire them after 365 days:
+
+```json
+{
+  "Rules": [
+    {
+      "ID": "archive-old-versions",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "" },
+      "NoncurrentVersionTransitions": [
+        {
+          "NoncurrentDays": 90,
+          "StorageClass": "GLACIER"
+        }
+      ],
+      "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 365
+      }
+    }
+  ]
+}
+```
+
+```bash
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket YOUR-BUCKET-NAME \
+  --lifecycle-configuration file://lifecycle.json
+```
+
+## Step 4: Enable S3 Server Access Logging
+
+Without access logging, there is no audit trail for `GetObject`, `PutObject`, or `DeleteObject` calls. I created a dedicated audit logging bucket and configured each data bucket to ship access logs there:
+
+```bash
+# Create the dedicated logging bucket
+aws s3api create-bucket \
+  --bucket YOUR-AUDIT-LOGS-BUCKET \
+  --region REGION
+
+# Grant S3 log delivery write permissions
+aws s3api put-bucket-acl \
+  --bucket YOUR-AUDIT-LOGS-BUCKET \
+  --grant-write URI=http://acs.amazonaws.com/groups/s3/LogDelivery \
+  --grant-read-acp URI=http://acs.amazonaws.com/groups/s3/LogDelivery
+
+# Enable logging on the data bucket
+aws s3api put-bucket-logging \
+  --bucket YOUR-BUCKET-NAME \
+  --bucket-logging-status '{
+    "LoggingEnabled": {
+      "TargetBucket": "YOUR-AUDIT-LOGS-BUCKET",
+      "TargetPrefix": "YOUR-BUCKET-NAME/"
+    }
+  }'
+```
+
+Each bucket writes logs to its own prefix in the audit bucket, making it straightforward to query logs per-bucket using Athena if an investigation is needed.
+
+## SOC 2 Relevance
+
+**CC6.1** — Data at rest must be protected. SSE-KMS encryption with a deny policy for unencrypted uploads directly satisfies this. The KMS key access is itself controlled by IAM, adding a second layer of access control.
+
+**CC6.7** — Transmission of information must be protected. The `DenyNonSecureTransport` bucket policy enforces TLS for all S3 API calls, mapping directly to this control.
+
+**A1.2** — The entity's system recovery point objectives are met. Versioning with lifecycle policies ensures data can be recovered from accidental deletion or corruption, satisfying availability and recovery controls.
+
+All three controls required documented evidence: bucket configurations, encryption settings, and lifecycle policies were exported and submitted to the SOC 2 evidence package.
+
+## Outcome
+
+- All S3 buckets have Block Public Access enabled at both bucket and account level
+- SSE-KMS encryption enforced with a deny policy for any unencrypted or non-HTTPS write
+- Versioning enabled on all data buckets; lifecycle rules archive non-current versions to Glacier at 90 days
+- S3 server access logging flowing to a dedicated audit bucket with per-bucket prefixes
+- Zero public access or unencrypted bucket findings in AWS Config compliance scan
+- Audit log trail available for incident response and SOC 2 evidence review

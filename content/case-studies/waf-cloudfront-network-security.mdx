@@ -1,0 +1,150 @@
+---
+title: "Network Security: AWS WAF, CloudFront Logging, and NACL Isolation"
+slug: "waf-cloudfront-network-security"
+date: "2024-03-20"
+summary: "How I configured AWS WAF for rate limiting and threat protection on CloudFront, enabled CloudFront access logging, and used NACLs for additional network layer isolation."
+tags: ["AWS", "WAF", "CloudFront", "Network Security", "SOC 2", "DevSecOps"]
+readTime: "7 min read"
+---
+
+## The Problem
+
+Before I implemented network-layer controls at Enquire AI, the production VPC subnets had permissive NACLs that allowed unrestricted inbound traffic on all ports. Security groups provided some isolation, but NACLs — a stateless control layer — were doing nothing.
+
+Under SOC 2 CC6.6, the entity must implement controls to protect against threats from outside system boundaries. An application exposed to the internet with no rate limiting, no signature-based filtering, and no network-layer restrictions does not meet that bar.
+
+## Step 1: Updated existing WAF Web ACL with Managed Rules and Rate Limiting
+
+I updated our WAF Web ACL at the regional scope (us-east-1) and associated it with the CloudFront distribution. The ACL includes three rule groups:
+
+**AWS Managed Rules — Common Rule Set:** Blocks common web exploits including SQL injection, cross-site scripting, and known bad inputs.
+
+**AWS Managed Rules — Known Bad Inputs:** Blocks requests that match patterns known to be used in exploitation attempts.
+
+**Rate Limiting Rule:** Limits each IP to 1000 requests per 5-minute window. Any IP exceeding this threshold is blocked for the remainder of that window. This is the rate limit rule in JSON:
+
+```json
+{
+  "Name": "RateLimitPerIP",
+  "Priority": 0,
+  "Action": { "Block": {} },
+  "Statement": {
+    "RateBasedStatement": {
+      "Limit": 1000,
+      "AggregateKeyType": "IP"
+    }
+  },
+  "VisibilityConfig": {
+    "SampledRequestsEnabled": true,
+    "CloudWatchMetricsEnabled": true,
+    "MetricName": "RateLimitPerIP"
+  }
+}
+```
+
+I created the full Web ACL and associated it with the CloudFront distribution using the CLI:
+
+```bash
+# Create the Web ACL
+aws wafv2 create-web-acl \
+  --name enquire-prod-waf \
+  --scope CLOUDFRONT \
+  --region us-east-1 \
+  --default-action Allow={} \
+  --rules file://waf-rules.json \
+  --visibility-config \
+    SampledRequestsEnabled=true,\
+    CloudWatchMetricsEnabled=true,\
+    MetricName=enquire-prod-waf
+
+# Associate with CloudFront distribution
+aws wafv2 associate-web-acl \
+  --web-acl-arn arn:aws:wafv2:us-east-1:ACCOUNT-ID:global/webacl/enquire-prod-waf/WEBACL-ID \
+  --resource-arn arn:aws:cloudfront::ACCOUNT-ID:distribution/YOUR-DISTRIBUTION-ID \
+  --region us-east-1
+```
+
+WAF metrics are published to CloudWatch automatically. I added a CloudWatch alarm on the `BlockedRequests` metric to alert when block counts spike, which can indicate an active scanning or attack attempt.
+
+## Step 2: Enable CloudFront Access Logging
+
+CloudFront access logs capture every request: timestamp, edge location, client IP, HTTP method, URI, status code, bytes transferred, and the User-Agent. I created a dedicated S3 logging bucket and enabled logging on the distribution:
+
+```bash
+aws s3api create-bucket \
+  --bucket YOUR-CF-LOGS-BUCKET \
+  --region REGION
+
+aws s3api put-bucket-acl \
+  --bucket YOUR-CF-LOGS-BUCKET \
+  --acl private
+```
+
+The distribution config's logging block was set as follows:
+
+```json
+{
+  "Logging": {
+    "Enabled": true,
+    "IncludeCookies": false,
+    "Bucket": "YOUR-CF-LOGS-BUCKET.s3.amazonaws.com",
+    "Prefix": "cloudfront/"
+  }
+}
+```
+
+```bash
+aws cloudfront update-distribution \
+  --id YOUR-DISTRIBUTION-ID \
+  --distribution-config file://distribution-config.json \
+  --if-match YOUR-ETAG
+```
+
+Logs are delivered to S3 within minutes. I set up an Athena table over the logs bucket so that URI-specific queries can be run during incident response without downloading files manually.
+
+## Step 3: NACL Configuration for Production Subnets
+
+Network ACLs sit at the subnet boundary and provide stateless, numbered-rule filtering before traffic reaches any security group. I replaced the default permissive NACLs on production subnets with explicit allow rules for expected traffic only.
+
+Inbound rules for the production application subnet:
+
+```json
+[
+  { "RuleNumber": 100, "Protocol": "6", "RuleAction": "allow",
+    "CidrBlock": "0.0.0.0/0", "PortRange": { "From": 443, "To": 443 } },
+  { "RuleNumber": 110, "Protocol": "6", "RuleAction": "allow",
+    "CidrBlock": "10.0.0.0/16", "PortRange": { "From": 1024, "To": 65535 } },
+  { "RuleNumber": 32766, "Protocol": "-1", "RuleAction": "deny",
+    "CidrBlock": "0.0.0.0/0" }
+]
+```
+
+Outbound rules allow return traffic on ephemeral ports plus outbound HTTPS (for S3, Secrets Manager, and external API calls):
+
+```json
+[
+  { "RuleNumber": 100, "Protocol": "6", "RuleAction": "allow",
+    "CidrBlock": "0.0.0.0/0", "PortRange": { "From": 443, "To": 443 } },
+  { "RuleNumber": 110, "Protocol": "6", "RuleAction": "allow",
+    "CidrBlock": "0.0.0.0/0", "PortRange": { "From": 1024, "To": 65535 } },
+  { "RuleNumber": 32766, "Protocol": "-1", "RuleAction": "deny",
+    "CidrBlock": "0.0.0.0/0" }
+]
+```
+
+This ensures that even if a security group is misconfigured, the NACL blocks unexpected inbound traffic at the subnet boundary before it reaches any instance. Port 22 is not in the inbound allow list — SSH to EC2 instances is handled exclusively via AWS Systems Manager Session Manager, so no direct SSH port needs to be open.
+
+## SOC 2 Relevance
+
+**CC6.6** — *The entity implements controls to prevent or detect and act upon the introduction of unauthorized or malicious software.* WAF managed rules and rate limiting directly implement this control at the application layer.
+
+**CC6.7** — *The entity restricts the transmission of information to authorized internal and external users and processes.* NACL rules restricting allowed ports and CloudFront logging providing an audit trail of all external transmission satisfy this control.
+
+## Outcome
+
+- WAF Web ACL deployed on CloudFront with AWS Managed Rules and 1000 req/5min rate limiting per IP
+- WAF BlockedRequests metric alarmed in CloudWatch for spike detection
+- CloudFront access logging enabled to a dedicated S3 bucket, queryable via Athena
+- Production subnet NACLs replaced with explicit allow-only rules for HTTPS and ephemeral return traffic
+- SSH port removed from all inbound NACLs; instance access exclusively via SSM Session Manager
+- Network security controls documented and submitted as SOC 2 CC6.6 / CC6.7 evidence

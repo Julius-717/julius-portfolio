@@ -1,0 +1,179 @@
+---
+title: "Building a SOC 2 Logging Architecture with CloudTrail, CloudWatch, and Security Hub"
+slug: "cloudtrail-cloudwatch-logging"
+date: "2024-03-10"
+summary: "How I designed and implemented a centralized logging and monitoring architecture — enabling CloudTrail in all regions, capturing EC2 and application logs in CloudWatch, and centralizing compliance with Security Hub and GuardDuty."
+tags: ["AWS", "CloudTrail", "CloudWatch", "Security Hub", "SOC 2", "DevSecOps"]
+readTime: "9 min read"
+---
+
+## The Problem
+
+When I started the SOC 2 work at Enquire AI, there was no centralized audit trail. CloudTrail existed but was only enabled in us-east-1. EC2 system logs were not being shipped anywhere. Application logs were written to local disk on the instance — gone on termination. There were no alerts for IAM changes, root account activity, or security group modifications.
+
+For SOC 2 CC7.1 and CC7.2, you need to demonstrate that the environment is being monitored, that security-relevant events are captured, and that anomalies trigger some form of alert. Without centralized logging, that evidence does not exist and cannot be reconstructed.
+
+## Step 1: Multi-Region CloudTrail with Log Integrity Validation
+
+I created a single multi-region trail that captures API activity across every AWS region, with log file validation enabled so that any tampering with log files is detectable:
+
+```bash
+aws cloudtrail create-trail \
+  --name prod-audit-trail \
+  --s3-bucket-name YOUR-CLOUDTRAIL-LOGS-BUCKET \
+  --is-multi-region-trail \
+  --enable-log-file-validation \
+  --kms-key-id arn:aws:kms:REGION:ACCOUNT-ID:key/YOUR-KMS-KEY-ID \
+  --include-global-service-events \
+  --region us-east-1
+
+aws cloudtrail start-logging --name prod-audit-trail
+```
+
+The `--include-global-service-events` flag ensures IAM and STS events — which are global services — are captured in the trail. Without it, IAM policy changes would be absent from the audit log.
+
+I also enabled CloudTrail Insights on the trail to detect unusual API call volumes, which can signal credential abuse or runaway automation:
+
+```bash
+aws cloudtrail put-insight-selectors \
+  --trail-name prod-audit-trail \
+  --insight-selectors '[{"InsightType": "ApiCallRateInsight"}]'
+```
+
+## Step 2: EC2 and Application Log Shipping via CloudWatch Agent
+
+System and application logs needed to flow to CloudWatch so they could be retained, searched, and alerted on. I installed the CloudWatch agent on all EC2 instances via SSM and pushed this configuration:
+
+```json
+{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/messages",
+            "log_group_name": "/ec2/system/messages",
+            "log_stream_name": "{instance_id}",
+            "retention_in_days": 90
+          },
+          {
+            "file_path": "/var/log/secure",
+            "log_group_name": "/ec2/system/secure",
+            "log_stream_name": "{instance_id}",
+            "retention_in_days": 90
+          },
+          {
+            "file_path": "/opt/app/logs/application.log",
+            "log_group_name": "/app/enquire/application",
+            "log_stream_name": "{instance_id}",
+            "retention_in_days": 90
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+The `/var/log/secure` log captures all SSH authentication attempts — successful and failed — which is critical for detecting brute force attempts and unauthorized access.
+
+## Step 3: CloudWatch Alarms and EventBridge Rules for Security Events
+
+Logging without alerting is an incomplete control. I created CloudWatch metric filters and alarms for the four highest-priority security events:
+
+- IAM policy changes
+- Root account activity
+- Security group modifications
+- Failed authentication events
+
+For each, a CloudWatch metric filter reads from the CloudTrail log group, and an alarm fires when the metric exceeds zero. Here is the EventBridge rule that captures IAM policy changes and routes them to an SNS topic for immediate notification:
+
+```json
+{
+  "source": ["aws.iam"],
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["iam.amazonaws.com"],
+    "eventName": [
+      "AttachRolePolicy",
+      "DetachRolePolicy",
+      "PutRolePolicy",
+      "DeleteRolePolicy",
+      "CreatePolicy",
+      "DeletePolicy",
+      "PutUserPolicy",
+      "AttachUserPolicy"
+    ]
+  }
+}
+```
+
+```bash
+aws events put-rule \
+  --name iam-policy-change-alert \
+  --event-pattern file://iam-event-pattern.json \
+  --state ENABLED
+
+aws events put-targets \
+  --rule iam-policy-change-alert \
+  --targets "Id=1,Arn=arn:aws:sns:REGION:ACCOUNT-ID:security-alerts"
+```
+
+A matching rule was created for root account login events — any use of the root user triggers an immediate alert, since root should never be used for day-to-day operations.
+
+## Step 4: GuardDuty and Security Hub
+
+GuardDuty handles threat detection at the API, network, and DNS layer — it analyzes CloudTrail, VPC Flow Logs, and DNS logs automatically once enabled:
+
+```bash
+aws guardduty create-detector \
+  --enable \
+  --finding-publishing-frequency FIFTEEN_MINUTES \
+  --region us-east-1
+```
+
+Security Hub provides the centralized compliance dashboard. I enabled it with the AWS Foundational Security Best Practices standard, which maps controls to CIS Benchmarks and SOC 2 criteria:
+
+```bash
+aws securityhub enable-security-hub \
+  --enable-default-standards \
+  --region us-east-1
+```
+
+Once both are enabled, GuardDuty findings are automatically imported into Security Hub as findings — giving a single pane of glass for both compliance status and active threats.
+
+## Step 5: AWS Config for Continuous Compliance
+
+I enabled AWS Config with the full set of managed rules relevant to the SOC 2 scope. One example — the rule that flags any EC2 security group allowing unrestricted inbound SSH:
+
+```json
+{
+  "ConfigRuleName": "restricted-ssh",
+  "Source": {
+    "Owner": "AWS",
+    "SourceIdentifier": "INCOMING_SSH_DISABLED"
+  },
+  "Scope": {
+    "ComplianceResourceTypes": ["AWS::EC2::SecurityGroup"]
+  }
+}
+```
+
+Config evaluates this rule continuously and marks any violating security group as NON_COMPLIANT in the Config console, which also surfaces as a finding in Security Hub.
+
+## SOC 2 Relevance
+
+**CC7.1** — *The entity uses detection and monitoring procedures to identify changes to configurations or new vulnerabilities.* CloudTrail, GuardDuty, and AWS Config together satisfy this control.
+
+**CC7.2** — *The entity monitors system components and the operation of those components for anomalies that are indicative of malicious acts, natural disasters, and errors.* CloudWatch alarms on IAM changes and authentication failures, plus GuardDuty anomaly detection, directly address this.
+
+**CC4.1** — *The entity selects, develops, and performs ongoing and/or separate evaluations to ascertain whether the components of internal control are present and functioning.* Continuous Config rules and Security Hub scoring provide ongoing evaluation evidence required by this criterion.
+
+## Outcome
+
+- Multi-region CloudTrail capturing all API events with KMS encryption and log integrity validation
+- EC2 system and application logs streaming to CloudWatch with 90-day retention
+- EventBridge rules alerting on IAM changes, root usage, and security group modifications
+- GuardDuty enabled with 15-minute finding publication, findings routed to Security Hub
+- AWS Config continuously evaluating 20+ managed rules across the production account
+- Security Hub providing a real-time compliance score and centralized finding dashboard for SOC 2 review
