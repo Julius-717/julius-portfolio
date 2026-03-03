@@ -15,12 +15,7 @@ import {
   FaEnvelope,
   FaLinkedin,
 } from "react-icons/fa";
-import {
-  SiTypescript,
-  SiIonic,
-  SiFlutter,
-  SiSolidity,
-} from "react-icons/si";
+import { SiTypescript, SiIonic, SiFlutter, SiSolidity } from "react-icons/si";
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -96,6 +91,7 @@ export default function Home() {
     screenshots: string[];
     tags: string[];
     links: ProjectLinks;
+    caseStudyLink: string | null;
   }
 
   const projects: Project[] = [
@@ -104,12 +100,9 @@ export default function Home() {
       description: (
         <>
           A production AI-powered mobile platform serving real users across
-          Android and iOS. I led the end-to-end development and modernization
-          of the application, focusing on{" "}
-          <span className="font-semibold">security</span>,{" "}
-          <span className="font-semibold">performance</span>, and{" "}
-          <span className="font-semibold">scalability</span>.
-          <ul className="list-disc list-inside mt-4 space-y-2 text-[#374151] dark:text-[#CBD5E1]">
+          Android and iOS. I led the end-to-end engineering of the
+          cross-platform application from architecture to deployment.
+          <ul className="list-disc list-inside mt-4 space-y-2 text-[#374151] dark:text-gray-300">
             <li>
               <span className="font-semibold">Platform Engineering:</span> Built
               and shipped a cross-platform Ionic/Angular + Capacitor app in 6
@@ -117,27 +110,19 @@ export default function Home() {
               low-end devices.
             </li>
             <li>
-              <span className="font-semibold">Security & Compliance:</span>{" "}
-              Implemented secure Auth0 SSO (OAuth), improved API handling, and
-              contributed to SOC 2 security controls and documentation.
+              <span className="font-semibold">Authentication:</span> Implemented
+              secure Auth0 SSO (OAuth 2.0 + PKCE) with token refresh, silent
+              re-auth, and session management.
             </li>
             <li>
-              <span className="font-semibold">Cloud Security & SOC 2 Controls:</span>{" "}
-              Enforced IAM least privilege policies across EC2, Lambda, and
-              application roles. Enabled CloudTrail in all AWS regions with
-              encrypted S3 storage. Configured GuardDuty, Security Hub, AWS
-              Config, and Inspector for compliance monitoring and threat detection.
+              <span className="font-semibold">Real-Time Systems:</span>{" "}
+              Integrated WebSockets and AI APIs to support real-time
+              communication and expert matching at scale.
             </li>
             <li>
-              <span className="font-semibold">Infrastructure Hardening:</span>{" "}
-              Enforced IMDSv2 on EC2 instances, enabled S3 Block Public Access,
-              versioning, lifecycle policies, and configured AWS WAF for rate
-              limiting and application-layer protection.
-            </li>
-            <li>
-              <span className="font-semibold">Reliability & Real-Time Systems:</span>{" "}
-              Integrated WebSockets and AI APIs to support real-time communication
-              and expert matching at scale.
+              <span className="font-semibold">Performance:</span> Reduced app
+              startup time by 1.5s and improved user retention by 32% through
+              targeted profiling and optimization.
             </li>
           </ul>
         </>
@@ -150,19 +135,72 @@ export default function Home() {
         "/images/enquire-screen-4.jpeg",
       ],
       tags: [
-        "AI",
-        "Mobile App",
-        "Cross-Platform",
-        "Ionic/Angular",
+        "Ionic",
+        "Angular",
         "Capacitor",
+        "Auth0",
+        "WebSockets",
+        "Cross-Platform",
         "Firebase",
-        "DevSecOps",
       ],
       links: {
         playstore:
           "https://play.google.com/store/apps/details?id=ai.enquire.app&hl=en-US&pli=1",
         appstore: "https://apps.apple.com/us/app/enquire-ai/id6483439331",
       },
+      caseStudyLink: null,
+    },
+    {
+      title: "Enquire AI — Cloud Security & SOC 2",
+      description: (
+        <>
+          Led the cloud security hardening and SOC 2 readiness program for
+          Enquire AI&apos;s AWS infrastructure — designing and implementing
+          controls across identity, data, network, logging, and vulnerability
+          management.
+          <ul className="list-disc list-inside mt-4 space-y-2 text-[#374151] dark:text-gray-300">
+            <li>
+              <span className="font-semibold">IAM & Identity:</span> Enforced
+              least privilege across EC2, Lambda, and application roles.
+              Implemented strong password policy and eliminated wildcard
+              permissions.
+            </li>
+            <li>
+              <span className="font-semibold">Logging & Monitoring:</span>{" "}
+              Enabled multi-region CloudTrail with encrypted S3 storage,
+              CloudWatch alerting for IAM changes and security events, and
+              centralized compliance via Security Hub and GuardDuty.
+            </li>
+            <li>
+              <span className="font-semibold">Infrastructure Hardening:</span>{" "}
+              Enforced IMDSv2 on all EC2 instances, enabled S3 Block Public
+              Access, versioning, lifecycle policies, and deployed AWS WAF for
+              rate limiting and application-layer protection.
+            </li>
+            <li>
+              <span className="font-semibold">Vulnerability Management:</span>{" "}
+              Enabled AWS Inspector for EC2 scanning and integrated Snyk and
+              OWASP dependency checks into the CI/CD pipeline.
+            </li>
+          </ul>
+        </>
+      ),
+      image: "/images/enquire.png",
+      screenshots: [],
+      tags: [
+        "AWS",
+        "SOC 2",
+        "IAM",
+        "CloudTrail",
+        "GuardDuty",
+        "Security Hub",
+        "DevSecOps",
+        "AWS WAF",
+      ],
+      links: {
+        website: "https://app.enquire.ai",
+      },
+      caseStudyLink: "/case-studies",
     },
     {
       title: "Enquire AI — Web Platform",
@@ -170,10 +208,11 @@ export default function Home() {
         "The production web platform for Enquire AI, giving users full access to AI-powered insights and expert matching from any browser. Built for performance, security, and seamless cross-device continuity with the mobile app.",
       image: "/images/enquire.png",
       screenshots: [],
-      tags: ["AI", "Web App", "Production", "DevSecOps", "Auth0", "SSO"],
+      tags: ["AI", "Web App", "Production", "Auth0", "SSO"],
       links: {
         website: "https://app.enquire.ai",
       },
+      caseStudyLink: null,
     },
     {
       title: "Portfolio Website",
@@ -183,6 +222,7 @@ export default function Home() {
       screenshots: [],
       tags: ["Next.js", "TailwindCSS", "Framer Motion"],
       links: {},
+      caseStudyLink: null,
     },
   ];
 
@@ -400,31 +440,50 @@ export default function Home() {
               </motion.div>
             </div>
           </div>
-
         </section>
 
         {/* Metrics bar */}
         <section className="bg-[#F3F4F6] dark:bg-[#0D0D14] py-10 px-6 border-t border-[#E5E7EB] dark:border-gray-800">
           <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
             <div>
-              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">6 Months</p>
-              <p className="text-sm text-[#6B7280] dark:text-gray-400">Product Delivery</p>
+              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">
+                6 Months
+              </p>
+              <p className="text-sm text-[#6B7280] dark:text-gray-400">
+                Product Delivery
+              </p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">-1.5s</p>
-              <p className="text-sm text-[#6B7280] dark:text-gray-400">Load Time Reduction</p>
+              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">
+                -1.5s
+              </p>
+              <p className="text-sm text-[#6B7280] dark:text-gray-400">
+                Load Time Reduction
+              </p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">+32%</p>
-              <p className="text-sm text-[#6B7280] dark:text-gray-400">User Retention</p>
+              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">
+                +32%
+              </p>
+              <p className="text-sm text-[#6B7280] dark:text-gray-400">
+                User Retention
+              </p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">SOC 2</p>
-              <p className="text-sm text-[#6B7280] dark:text-gray-400">Readiness Contributor</p>
+              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">
+                SOC 2
+              </p>
+              <p className="text-sm text-[#6B7280] dark:text-gray-400">
+                Readiness Contributor
+              </p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">AWS</p>
-              <p className="text-sm text-[#6B7280] dark:text-gray-400">Security Controls</p>
+              <p className="text-2xl font-bold text-[#0891B2] dark:text-cyan-400">
+                AWS
+              </p>
+              <p className="text-sm text-[#6B7280] dark:text-gray-400">
+                Security Controls
+              </p>
             </div>
           </div>
         </section>
@@ -539,11 +598,11 @@ export default function Home() {
             <span className="text-[#111827] dark:text-white font-semibold">
               Mobile Platform & DevSecOps Engineer
             </span>{" "}
-            with 4+ years of experience building and operating
-            production-grade mobile applications. My work sits at the
-            intersection of cross-platform engineering, cloud infrastructure,
-            CI/CD automation, and application security — ensuring systems are
-            not only usable, but reliable, secure, and scalable. 🚀
+            with 4+ years of experience building and operating production-grade
+            mobile applications. My work sits at the intersection of
+            cross-platform engineering, cloud infrastructure, CI/CD automation,
+            and application security — ensuring systems are not only usable, but
+            reliable, secure, and scalable. 🚀
             <br />
             <br />
             At{" "}
@@ -552,11 +611,11 @@ export default function Home() {
             </span>
             , I led the delivery of a cross-platform mobile platform used in
             production, owning everything from application architecture to
-            secure authentication, real-time systems, and deployment
-            workflows. I contributed to SOC 2 readiness, implemented secure
-            identity flows using Auth0, optimized performance for low-end
-            devices, and collaborated with DevOps teams to strengthen CI/CD
-            pipelines and security controls. ⚡
+            secure authentication, real-time systems, and deployment workflows.
+            I contributed to SOC 2 readiness, implemented secure identity flows
+            using Auth0, optimized performance for low-end devices, and
+            collaborated with DevOps teams to strengthen CI/CD pipelines and
+            security controls. ⚡
             <br />
             <br />
             I'm deepening applied offensive security skills —{" "}
@@ -639,7 +698,9 @@ export default function Home() {
                    hover:border-gray-600 transition"
                 >
                   <div className="text-3xl">{skill.icon}</div>
-                  <p className="text-[#111827] dark:text-[#E2E8F0] font-medium">{skill.name}</p>
+                  <p className="text-[#111827] dark:text-[#E2E8F0] font-medium">
+                    {skill.name}
+                  </p>
                 </motion.div>
               ))}
             </div>
@@ -780,61 +841,67 @@ export default function Home() {
                     ))}
                   </div>
 
-                  {/* Links */}
-                  {Object.keys(project.links).length > 0 && (
-                    <div className="flex flex-wrap gap-4 mt-auto">
-                      {project.links.playstore && (
-                        <a
-                          href={project.links.playstore}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-green-400 hover:underline"
-                        >
-                          <FaGooglePlay /> Google Play
-                        </a>
-                      )}
-                      {project.links.appstore && (
-                        <a
-                          href={project.links.appstore}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-gray-500 dark:text-gray-200 hover:underline"
-                        >
-                          <FaApple /> App Store
-                        </a>
-                      )}
-                      {project.links.website && (
-                        <a
-                          href={project.links.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-blue-400 hover:underline"
-                        >
-                          <FaExternalLinkAlt /> Website
-                        </a>
-                      )}
-                      {project.links.github && (
-                        <a
-                          href={project.links.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-gray-400 hover:underline"
-                        >
-                          <FaGithub /> GitHub
-                        </a>
-                      )}
-                      {project.links.live && (
-                        <a
-                          href={project.links.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-purple-400 hover:underline"
-                        >
-                          <FaExternalLinkAlt /> Live Demo
-                        </a>
-                      )}
-                    </div>
-                  )}
+                  {/* Links + Case Study */}
+                  <div className="flex flex-wrap items-center gap-4 mt-auto pt-4 border-t border-[#E5E7EB] dark:border-[#1E1E2E]">
+                    {project.links.playstore && (
+                      <a
+                        href={project.links.playstore}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-green-400 hover:underline text-sm"
+                      >
+                        <FaGooglePlay /> Google Play
+                      </a>
+                    )}
+                    {project.links.appstore && (
+                      <a
+                        href={project.links.appstore}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-gray-500 dark:text-gray-200 hover:underline text-sm"
+                      >
+                        <FaApple /> App Store
+                      </a>
+                    )}
+                    {project.links.website && (
+                      <a
+                        href={project.links.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-blue-400 hover:underline text-sm"
+                      >
+                        <FaExternalLinkAlt /> Website
+                      </a>
+                    )}
+                    {project.links.github && (
+                      <a
+                        href={project.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-gray-400 hover:underline text-sm"
+                      >
+                        <FaGithub /> GitHub
+                      </a>
+                    )}
+                    {project.links.live && (
+                      <a
+                        href={project.links.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-purple-400 hover:underline text-sm"
+                      >
+                        <FaExternalLinkAlt /> Live Demo
+                      </a>
+                    )}
+                    {project.caseStudyLink && (
+                      <Link
+                        href={project.caseStudyLink}
+                        className="ml-auto flex items-center gap-1 text-xs font-medium text-cyan-600 dark:text-cyan-400 hover:underline"
+                      >
+                        Read case studies →
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -850,8 +917,8 @@ export default function Home() {
                   Case Studies
                 </h2>
                 <p className="text-[#6B7280] dark:text-[#94A3B8] max-w-xl">
-                  Deep dives into the security and infrastructure decisions behind
-                  production systems.
+                  Deep dives into the security and infrastructure decisions
+                  behind production systems.
                 </p>
               </div>
               <Link
@@ -868,29 +935,35 @@ export default function Home() {
                 {
                   href: "/case-studies/iam-least-privilege-controls",
                   tags: ["AWS", "IAM", "SOC 2"],
-                  title: "Enforcing IAM Least Privilege and Role-Based Access Across AWS",
-                  summary: "How I replaced wildcard IAM policies with scoped roles for EC2, Lambda, and applications — including password policy enforcement for SOC 2 CC6.1.",
+                  title:
+                    "Enforcing IAM Least Privilege and Role-Based Access Across AWS",
+                  summary:
+                    "How I replaced wildcard IAM policies with scoped roles for EC2, Lambda, and applications — including password policy enforcement for SOC 2 CC6.1.",
                   meta: "2024-02-15 · 7 min read",
                 },
                 {
                   href: "/case-studies/s3-security-hardening",
                   tags: ["AWS", "S3", "Data Security"],
-                  title: "S3 Security Hardening: Encryption, Versioning, and Audit Logging",
-                  summary: "How I enforced SSE-KMS encryption, blocked public access, enabled versioning, and turned on access logging across all S3 buckets for SOC 2 data controls.",
+                  title:
+                    "S3 Security Hardening: Encryption, Versioning, and Audit Logging",
+                  summary:
+                    "How I enforced SSE-KMS encryption, blocked public access, enabled versioning, and turned on access logging across all S3 buckets for SOC 2 data controls.",
                   meta: "2024-02-20 · 8 min read",
                 },
                 {
                   href: "/case-studies/cloudtrail-cloudwatch-logging",
                   tags: ["CloudTrail", "Security Hub", "SOC 2"],
-                  title: "Building a SOC 2 Logging Architecture with CloudTrail and Security Hub",
-                  summary: "How I built centralized logging across all AWS regions with CloudTrail, CloudWatch alerting on IAM changes, GuardDuty, and a real-time Security Hub compliance dashboard.",
+                  title:
+                    "Building a SOC 2 Logging Architecture with CloudTrail and Security Hub",
+                  summary:
+                    "How I built centralized logging across all AWS regions with CloudTrail, CloudWatch alerting on IAM changes, GuardDuty, and a real-time Security Hub compliance dashboard.",
                   meta: "2024-03-10 · 9 min read",
                 },
               ].map((card) => (
                 <Link
                   key={card.href}
                   href={card.href}
-                  className="block group p-6 bg-white dark:bg-[#111118]
+                  className="group p-6 bg-white dark:bg-[#111118]
                              border border-[#E5E7EB] dark:border-[#1E1E2E]
                              rounded-2xl hover:border-cyan-500 dark:hover:border-cyan-500
                              transition-all duration-200 flex flex-col"
