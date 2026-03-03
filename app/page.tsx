@@ -82,14 +82,30 @@ export default function Home() {
     { name: "Solidity", icon: <SiSolidity className="text-gray-300" /> },
   ];
 
-  const projects = [
+  interface ProjectLinks {
+    playstore?: string;
+    appstore?: string;
+    website?: string;
+    github?: string;
+    live?: string;
+  }
+  interface Project {
+    title: string;
+    description: React.ReactNode;
+    image: string;
+    screenshots: string[];
+    tags: string[];
+    links: ProjectLinks;
+  }
+
+  const projects: Project[] = [
     {
-      title: "Enquire AI",
+      title: "Enquire AI — Mobile App",
       description: (
         <>
           A production AI-powered mobile platform serving real users across
-          Android and iOS. I led the end-to-end development and modernization of
-          the application, focusing on{" "}
+          Android and iOS. I led the end-to-end development and modernization
+          of the application, focusing on{" "}
           <span className="font-semibold">security</span>,{" "}
           <span className="font-semibold">performance</span>, and{" "}
           <span className="font-semibold">scalability</span>.
@@ -101,38 +117,38 @@ export default function Home() {
               low-end devices.
             </li>
             <li>
-              <span className="font-semibold">Security & Compliance:</span>
+              <span className="font-semibold">Security & Compliance:</span>{" "}
               Implemented secure Auth0 SSO (OAuth), improved API handling, and
               contributed to SOC 2 security controls and documentation.
             </li>
             <li>
-              <span className="font-semibold">
-                Cloud Security & SOC 2 Controls:
-              </span>
+              <span className="font-semibold">Cloud Security & SOC 2 Controls:</span>{" "}
               Enforced IAM least privilege policies across EC2, Lambda, and
               application roles. Enabled CloudTrail in all AWS regions with
               encrypted S3 storage. Configured GuardDuty, Security Hub, AWS
-              Config, and Inspector for compliance monitoring and threat
-              detection.
+              Config, and Inspector for compliance monitoring and threat detection.
             </li>
-
             <li>
-              <span className="font-semibold">Infrastructure Hardening:</span>
+              <span className="font-semibold">Infrastructure Hardening:</span>{" "}
               Enforced IMDSv2 on EC2 instances, enabled S3 Block Public Access,
               versioning, lifecycle policies, and configured AWS WAF for rate
               limiting and application-layer protection.
             </li>
             <li>
-              <span className="font-semibold">
-                Reliability & Real-Time Systems:
-              </span>{" "}
-              Integrated WebSockets and AI APIs to support real-time
-              communication and expert matching at scale.
+              <span className="font-semibold">Reliability & Real-Time Systems:</span>{" "}
+              Integrated WebSockets and AI APIs to support real-time communication
+              and expert matching at scale.
             </li>
           </ul>
         </>
       ),
-      image: "/images/enquire.png",
+      image: "/images/enquire-screen-1.jpeg",
+      screenshots: [
+        "/images/enquire-screen-1.jpeg",
+        "/images/enquire-screen-2.jpeg",
+        "/images/enquire-screen-3.jpeg",
+        "/images/enquire-screen-4.jpeg",
+      ],
       tags: [
         "AI",
         "Mobile App",
@@ -146,24 +162,27 @@ export default function Home() {
         playstore:
           "https://play.google.com/store/apps/details?id=ai.enquire.app&hl=en-US&pli=1",
         appstore: "https://apps.apple.com/us/app/enquire-ai/id6483439331",
+      },
+    },
+    {
+      title: "Enquire AI — Web Platform",
+      description:
+        "The production web platform for Enquire AI, giving users full access to AI-powered insights and expert matching from any browser. Built for performance, security, and seamless cross-device continuity with the mobile app.",
+      image: "/images/enquire.png",
+      screenshots: [],
+      tags: ["AI", "Web App", "Production", "DevSecOps", "Auth0", "SSO"],
+      links: {
         website: "https://app.enquire.ai",
-        github: "",
-        live: "",
       },
     },
     {
       title: "Portfolio Website",
       description:
-        "My personal portfolio showcasing skills, projects, and blogs. Built with Next.js, TailwindCSS, and Framer Motion.",
+        "My personal portfolio showcasing skills, projects, and case studies. Built with Next.js, TailwindCSS, and Framer Motion.",
       image: "/images/portfolio.png",
+      screenshots: [],
       tags: ["Next.js", "TailwindCSS", "Framer Motion"],
-      links: {
-        playstore: "",
-        appstore: "",
-        website: "",
-        github: "",
-        live: "",
-      },
+      links: {},
     },
   ];
 
@@ -709,15 +728,36 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
                 className="bg-white dark:bg-[#111118] border border-[#E5E7EB] dark:border-[#1E1E2E] rounded-2xl overflow-hidden shadow hover:shadow-2xl hover:-translate-y-1 transition flex flex-col"
               >
-                {/* Image */}
-                <div className="relative w-full h-56">
+                {/* Main Image */}
+                <div className="relative w-full h-64 overflow-hidden">
                   <Image
                     src={project.image}
                     alt={project.title}
                     fill
-                    className="object-cover"
+                    className="object-cover object-top"
                   />
                 </div>
+
+                {/* Screenshot strip — only renders if screenshots array is non-empty */}
+                {project.screenshots.length > 0 && (
+                  <div className="flex gap-2 px-4 pt-4 overflow-x-auto scrollbar-hide">
+                    {project.screenshots.map((src, i) => (
+                      <div
+                        key={i}
+                        className="relative shrink-0 w-20 h-36 rounded-lg overflow-hidden
+                                   border border-[#1E1E2E] hover:border-cyan-500
+                                   transition cursor-pointer"
+                      >
+                        <Image
+                          src={src}
+                          alt={`${project.title} screen ${i + 1}`}
+                          fill
+                          className="object-cover object-top"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Content */}
                 <div className="p-6 flex flex-col grow text-left">
@@ -741,58 +781,60 @@ export default function Home() {
                   </div>
 
                   {/* Links */}
-                  <div className="flex flex-wrap gap-4 mt-auto">
-                    {project.links.playstore && (
-                      <a
-                        href={project.links.playstore}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-green-400 hover:underline"
-                      >
-                        <FaGooglePlay /> Google Play
-                      </a>
-                    )}
-                    {project.links.appstore && (
-                      <a
-                        href={project.links.appstore}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-gray-500 dark:text-gray-200 hover:underline"
-                      >
-                        <FaApple /> App Store
-                      </a>
-                    )}
-                    {project.links.website && (
-                      <a
-                        href={project.links.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-blue-400 hover:underline"
-                      >
-                        <FaExternalLinkAlt /> Website
-                      </a>
-                    )}
-                    {project.links.github && (
-                      <a
-                        href={project.links.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-gray-400 hover:underline"
-                      >
-                        <FaGithub /> GitHub
-                      </a>
-                    )}
-                    {project.links.live && (
-                      <a
-                        href={project.links.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-purple-400 hover:underline"
-                      >
-                        <FaExternalLinkAlt /> Live Demo
-                      </a>
-                    )}
-                  </div>
+                  {Object.keys(project.links).length > 0 && (
+                    <div className="flex flex-wrap gap-4 mt-auto">
+                      {project.links.playstore && (
+                        <a
+                          href={project.links.playstore}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-green-400 hover:underline"
+                        >
+                          <FaGooglePlay /> Google Play
+                        </a>
+                      )}
+                      {project.links.appstore && (
+                        <a
+                          href={project.links.appstore}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-gray-500 dark:text-gray-200 hover:underline"
+                        >
+                          <FaApple /> App Store
+                        </a>
+                      )}
+                      {project.links.website && (
+                        <a
+                          href={project.links.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-blue-400 hover:underline"
+                        >
+                          <FaExternalLinkAlt /> Website
+                        </a>
+                      )}
+                      {project.links.github && (
+                        <a
+                          href={project.links.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-gray-400 hover:underline"
+                        >
+                          <FaGithub /> GitHub
+                        </a>
+                      )}
+                      {project.links.live && (
+                        <a
+                          href={project.links.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-purple-400 hover:underline"
+                        >
+                          <FaExternalLinkAlt /> Live Demo
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
