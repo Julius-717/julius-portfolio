@@ -541,7 +541,7 @@ export default function Home() {
                     href="/pdf/Julius_Gachuhi_Resume.pdf"
                     download
                     aria-label="Download CV"
-                    className="inline-flex items-center px-6 py-3 rounded-lg font-semibold text-sm border transition-all duration-200 hover:border-[var(--ds-cyan)]"
+                    className="inline-flex items-center px-6 py-3 rounded-lg font-semibold text-sm border transition-all duration-200 hover:border-(--ds-cyan)"
                     style={{
                       borderColor: "var(--ds-border)",
                       color: "var(--ds-white)",
@@ -693,8 +693,7 @@ export default function Home() {
               background: "rgba(13,18,32,0.7)",
             }}
           >
-            <div className="max-w-7xl mx-auto grid grid-cols-3 divide-x"
-              style={{ divideColor: "var(--ds-border)" }}>
+            <div className="max-w-7xl mx-auto grid grid-cols-3 divide-x divide-[rgba(0,200,255,0.12)]">
               {[
                 {
                   value: "5+",
