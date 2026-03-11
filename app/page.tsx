@@ -47,14 +47,57 @@ export default function Home() {
     const dot = dotRef.current;
     const ring = ringRef.current;
     if (!dot || !ring) return;
+
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+    let animFrame: number;
+
     const onMove = (e: MouseEvent) => {
-      dot.style.left = `${e.clientX}px`;
-      dot.style.top = `${e.clientY}px`;
-      ring.style.left = `${e.clientX}px`;
-      ring.style.top = `${e.clientY}px`;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = `${mouseX}px`;
+      dot.style.top = `${mouseY}px`;
     };
+
+    const animateRing = () => {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.left = `${ringX}px`;
+      ring.style.top = `${ringY}px`;
+      animFrame = requestAnimationFrame(animateRing);
+    };
+
+    const onEnter = () => {
+      dot.style.transform = "translate(-50%, -50%) scale(2.5)";
+      ring.style.width = "48px";
+      ring.style.height = "48px";
+      ring.style.borderColor = "rgba(0,200,255,0.9)";
+    };
+
+    const onLeave = () => {
+      dot.style.transform = "translate(-50%, -50%) scale(1)";
+      ring.style.width = "32px";
+      ring.style.height = "32px";
+      ring.style.borderColor = "rgba(0,200,255,0.55)";
+    };
+
     window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    animFrame = requestAnimationFrame(animateRing);
+
+    const interactables = document.querySelectorAll("a, button");
+    interactables.forEach((el) => {
+      el.addEventListener("mouseenter", onEnter);
+      el.addEventListener("mouseleave", onLeave);
+    });
+
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(animFrame);
+      interactables.forEach((el) => {
+        el.removeEventListener("mouseenter", onEnter);
+        el.removeEventListener("mouseleave", onLeave);
+      });
+    };
   }, []);
 
   // Terminal command cycling
@@ -306,7 +349,7 @@ export default function Home() {
           </a>
 
           <div className="hidden md:flex space-x-6 items-center">
-            {["about", "skills", "projects", "contact"].map((item) => (
+            {["about", "skills", "certifications", "projects", "contact"].map((item) => (
               <a
                 key={item}
                 href={`#${item}`}
@@ -383,7 +426,7 @@ export default function Home() {
               borderColor: "var(--ds-border)",
             }}
           >
-            {["about", "skills", "projects", "contact"].map((item) => (
+            {["about", "skills", "certifications", "projects", "contact"].map((item) => (
               <a
                 key={item}
                 href={`#${item}`}
@@ -696,7 +739,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto grid grid-cols-3 divide-x divide-[rgba(0,200,255,0.12)]">
               {[
                 {
-                  value: "5+",
+                  value: "3+",
                   unit: "Years",
                   label: "DevSecOps",
                   colorClass: "stat-card-cyan",
@@ -1148,6 +1191,296 @@ export default function Home() {
                   {skill.name}
                 </span>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Certifications Section ───────────────────────────────── */}
+        <section
+          id="certifications"
+          className="relative py-24 px-6 border-t"
+          style={{ background: "#060810", borderColor: "rgba(0,200,255,0.06)" }}
+        >
+          <div className="max-w-6xl mx-auto">
+            {/* Eyebrow */}
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={fadeInUp}
+              transition={{ duration: 0.5 }}
+              className="text-xs mb-3"
+              style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-cyan)" }}
+            >
+              [ CREDENTIALS ]
+            </motion.p>
+
+            <motion.h2
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={fadeInUp}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl md:text-5xl font-extrabold mb-3 text-[#e8eeff]"
+              style={{ fontFamily: "var(--font-syne)" }}
+            >
+              Certifications &amp; Training
+            </motion.h2>
+            <div className="w-16 h-1 rounded-full mb-14" style={{ background: "var(--ds-cyan)" }} />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+              {/* ── Card 1: Africa Hackon (hero, full-width) ── */}
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-80px" }}
+                variants={fadeInUp}
+                transition={{ duration: 0.5, delay: 0 }}
+                className="col-span-1 md:col-span-2 lg:col-span-3 rounded-2xl p-8 border transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  background: "#050f08",
+                  borderColor: "rgba(0,255,157,0.35)",
+                  boxShadow: "0 0 60px rgba(0,255,157,0.07)",
+                }}
+              >
+                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                  {/* Badge image */}
+                  <div className="shrink-0 flex items-center justify-center w-48 h-48 relative">
+                    <div
+                      className="absolute inset-0 hex-clip"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(0,255,157,0.25) 0%, rgba(0,200,255,0.15) 100%)",
+                        padding: "3px",
+                      }}
+                    >
+                      <div className="w-full h-full hex-clip overflow-hidden flex items-center justify-center"
+                        style={{ background: "#050f08" }}>
+                        <Image
+                          src="/images/africahackon-badge.png"
+                          alt="Africa Hackon Badge"
+                          fill
+                          className="object-contain hex-clip"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                        />
+                        {/* Fallback monogram */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span
+                            className="text-3xl font-extrabold"
+                            style={{ fontFamily: "var(--font-syne)", color: "var(--ds-green)" }}
+                          >
+                            AH
+                          </span>
+                          <span
+                            className="text-[9px] uppercase tracking-widest mt-1"
+                            style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-muted)" }}
+                          >
+                            Africa Hackon
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    {/* Top badges row */}
+                    <div className="flex flex-wrap items-center gap-3 mb-4">
+                      <span
+                        className="px-2.5 py-1 rounded-full border text-[9px] uppercase tracking-widest font-semibold"
+                        style={{
+                          fontFamily: "var(--font-jetbrains-mono)",
+                          borderColor: "rgba(0,255,157,0.4)",
+                          color: "var(--ds-green)",
+                          background: "rgba(0,255,157,0.05)",
+                        }}
+                      >
+                        Featured Certification
+                      </span>
+                      <span
+                        className="flex items-center gap-1.5 text-[10px] font-medium"
+                        style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-green)" }}
+                      >
+                        <span className="status-pulse w-1.5 h-1.5 rounded-full inline-block" style={{ background: "var(--ds-green)" }} />
+                        VERIFIED COMPLETE
+                      </span>
+                    </div>
+
+                    <h3
+                      className="text-2xl md:text-3xl font-extrabold text-[#e8eeff] mb-3"
+                      style={{ fontFamily: "var(--font-syne)" }}
+                    >
+                      Cybersecurity Professional
+                    </h3>
+
+                    {/* Issuer row */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--ds-green)", flexShrink: 0 }}>
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      </svg>
+                      <a
+                        href="https://africahackon.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm hover:underline flex items-center gap-1"
+                        style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-cyan)" }}
+                      >
+                        Africa Hackon
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                        style={{
+                          fontFamily: "var(--font-jetbrains-mono)",
+                          background: "rgba(0,255,157,0.08)",
+                          color: "var(--ds-green)",
+                        }}
+                      >
+                        2025
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-[#8a9bc0] leading-relaxed mb-6 max-w-2xl">
+                      Hands-on cybersecurity training covering offensive security, penetration testing,
+                      vulnerability assessment, and defensive security operations.
+                    </p>
+
+                    <a
+                      href="https://www.credly.com/badges/6f22cdbc-2228-4f69-893e-8ca1533bb9d0/public_url"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border text-sm font-semibold transition-all duration-200 hover:bg-[rgba(0,255,157,0.1)] hover:border-[rgba(0,255,157,0.6)]"
+                      style={{
+                        borderColor: "rgba(0,255,157,0.35)",
+                        color: "var(--ds-green)",
+                        background: "transparent",
+                      }}
+                    >
+                      View Credential
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* ── Card 2: AWS Solutions Architect ── */}
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-80px" }}
+                variants={fadeInUp}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="rounded-2xl p-6 border transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                style={{
+                  background: "#0d0c08",
+                  borderColor: "rgba(255,153,0,0.2)",
+                }}
+              >
+                {/* Icon */}
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 shrink-0"
+                  style={{ background: "rgba(255,153,0,0.1)", border: "1px solid rgba(255,153,0,0.25)" }}>
+                  <span className="text-xl font-extrabold" style={{ fontFamily: "var(--font-jetbrains-mono)", color: "#ff9900" }}>AWS</span>
+                </div>
+
+                {/* Status */}
+                <div className="flex items-center gap-1.5 mb-4">
+                  <span className="status-pulse w-1.5 h-1.5 rounded-full inline-block" style={{ background: "#fbbf24" }} />
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-widest"
+                    style={{ fontFamily: "var(--font-jetbrains-mono)", color: "#fbbf24" }}
+                  >
+                    IN PROGRESS
+                  </span>
+                </div>
+
+                <h3
+                  className="text-lg font-bold text-[#e8eeff] mb-1 leading-snug"
+                  style={{ fontFamily: "var(--font-syne)" }}
+                >
+                  Solutions Architect Associate
+                </h3>
+                <p
+                  className="text-xs mb-4"
+                  style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-muted)" }}
+                >
+                  Amazon Web Services
+                </p>
+
+                <div className="mt-auto">
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                    style={{
+                      fontFamily: "var(--font-jetbrains-mono)",
+                      background: "rgba(255,153,0,0.08)",
+                      color: "#ff9900",
+                    }}
+                  >
+                    2025
+                  </span>
+                </div>
+              </motion.div>
+
+              {/* ── Card 3: SOC 2 ── */}
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-80px" }}
+                variants={fadeInUp}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="rounded-2xl p-6 border transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                style={{
+                  background: "#080c18",
+                  borderColor: "rgba(0,200,255,0.2)",
+                }}
+              >
+                {/* Icon */}
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 shrink-0"
+                  style={{ background: "rgba(0,200,255,0.08)", border: "1px solid rgba(0,200,255,0.2)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--ds-cyan)" }}>
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+
+                {/* Status */}
+                <div className="flex items-center gap-1.5 mb-4">
+                  <span className="status-pulse w-1.5 h-1.5 rounded-full inline-block" style={{ background: "var(--ds-cyan)" }} />
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-widest"
+                    style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-cyan)" }}
+                  >
+                    HANDS-ON VERIFIED
+                  </span>
+                </div>
+
+                <h3
+                  className="text-lg font-bold text-[#e8eeff] mb-1 leading-snug"
+                  style={{ fontFamily: "var(--font-syne)" }}
+                >
+                  SOC 2 Type II Implementation
+                </h3>
+                <p
+                  className="text-xs mb-4"
+                  style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-muted)" }}
+                >
+                  Practical Experience · Enquire AI
+                </p>
+
+                <div className="mt-auto">
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                    style={{
+                      fontFamily: "var(--font-jetbrains-mono)",
+                      background: "rgba(0,200,255,0.08)",
+                      color: "var(--ds-cyan)",
+                    }}
+                  >
+                    2024
+                  </span>
+                </div>
+              </motion.div>
+
             </div>
           </div>
         </section>
