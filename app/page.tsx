@@ -1603,7 +1603,9 @@ export default function Home() {
                     href: linkedIn,
                     icon: <FaLinkedin className="text-lg" />,
                     label: "LinkedIn",
-                    sub: linkedIn,
+                    sub: linkedIn
+                      ? linkedIn.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\/?/, "in/").replace(/\/$/, "")
+                      : undefined,
                     accent: "#3b82f6",
                     external: true,
                   },
@@ -1611,7 +1613,9 @@ export default function Home() {
                     href: github,
                     icon: <FaGithub className="text-lg" />,
                     label: "GitHub",
-                    sub: github,
+                    sub: github
+                      ? github.replace(/^https?:\/\/(www\.)?github\.com\/?/, "github.com/").replace(/\/$/, "")
+                      : undefined,
                     accent: "#9ca3af",
                     external: true,
                   },
