@@ -137,36 +137,17 @@
 }
 
 /* ─── Custom cursor ─────────────────────────────────────────── */
-* {
-  cursor: none !important;
+body { cursor: none; }
+a, button, [role="button"] { cursor: none; }
+
+.cursor-dot, .cursor-ring {
+  cursor: none;
+  pointer-events: none;
 }
 
-.cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  background: var(--ds-cyan);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: none;
-}
-
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 32px;
-  height: 32px;
-  border: 1.5px solid rgba(0, 200, 255, 0.55);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: left 0.12s ease-out, top 0.12s ease-out;
+@media (pointer: coarse) {
+  body, a, button, * { cursor: auto !important; }
+  .cursor-dot, .cursor-ring { display: none !important; }
 }
 
 /* ─── Grid overlay ──────────────────────────────────────────── */
