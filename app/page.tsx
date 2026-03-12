@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Head from "next/head";
@@ -30,8 +30,6 @@ const TERMINAL_COMMANDS = [
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [terminalIdx, setTerminalIdx] = useState(0);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -44,45 +42,45 @@ export default function Home() {
 
   // Custom cursor
   useEffect(() => {
-    const dot = dotRef.current;
-    const ring = ringRef.current;
+    const dot = document.querySelector(".cursor-dot") as HTMLElement;
+    const ring = document.querySelector(".cursor-ring") as HTMLElement;
     if (!dot || !ring) return;
 
     let mouseX = 0, mouseY = 0;
     let ringX = 0, ringY = 0;
-    let animFrame: number;
+    let frame: number;
 
     const onMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      dot.style.left = `${mouseX}px`;
-      dot.style.top = `${mouseY}px`;
+      dot.style.left = `${mouseX - 4}px`;
+      dot.style.top = `${mouseY - 4}px`;
     };
 
-    const animateRing = () => {
-      ringX += (mouseX - ringX) * 0.12;
-      ringY += (mouseY - ringY) * 0.12;
+    const animate = () => {
+      ringX += (mouseX - ringX - 16) * 0.12;
+      ringY += (mouseY - ringY - 16) * 0.12;
       ring.style.left = `${ringX}px`;
       ring.style.top = `${ringY}px`;
-      animFrame = requestAnimationFrame(animateRing);
+      frame = requestAnimationFrame(animate);
     };
 
     const onEnter = () => {
-      dot.style.transform = "translate(-50%, -50%) scale(2.5)";
+      dot.style.transform = "scale(2.5)";
       ring.style.width = "48px";
       ring.style.height = "48px";
-      ring.style.borderColor = "rgba(0,200,255,0.9)";
+      ring.style.borderColor = "rgba(0, 200, 255, 0.9)";
     };
 
     const onLeave = () => {
-      dot.style.transform = "translate(-50%, -50%) scale(1)";
+      dot.style.transform = "scale(1)";
       ring.style.width = "32px";
       ring.style.height = "32px";
-      ring.style.borderColor = "rgba(0,200,255,0.55)";
+      ring.style.borderColor = "rgba(0, 200, 255, 0.5)";
     };
 
     window.addEventListener("mousemove", onMove);
-    animFrame = requestAnimationFrame(animateRing);
+    frame = requestAnimationFrame(animate);
 
     const interactables = document.querySelectorAll("a, button");
     interactables.forEach((el) => {
@@ -92,7 +90,7 @@ export default function Home() {
 
     return () => {
       window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(animFrame);
+      cancelAnimationFrame(frame);
       interactables.forEach((el) => {
         el.removeEventListener("mouseenter", onEnter);
         el.removeEventListener("mouseleave", onLeave);
@@ -273,8 +271,16 @@ export default function Home() {
   return (
     <div className="ds-page-wrapper bg-[#060810] transition-colors duration-300 relative">
       {/* Custom cursor */}
-      <div ref={dotRef} className="cursor-dot" />
-      <div ref={ringRef} className="cursor-ring" />
+      <div
+        id="cursor-dot"
+        className="cursor-dot fixed w-2 h-2 bg-cyan-400 rounded-full z-9999 mix-blend-screen transition-transform duration-100"
+        style={{ left: -20, top: -20 }}
+      />
+      <div
+        id="cursor-ring"
+        className="cursor-ring fixed w-8 h-8 border border-cyan-400/50 rounded-full z-9998 mix-blend-screen"
+        style={{ left: -20, top: -20 }}
+      />
 
       <Head>
         <title>Julius Gachuhi | Mobile Platform & DevSecOps Engineer</title>
