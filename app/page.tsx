@@ -1487,6 +1487,67 @@ export default function Home() {
                 </div>
               </motion.div>
 
+              {/* ── Card 4: Microsoft AI Skills Fest ── */}
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-80px" }}
+                variants={fadeInUp}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="rounded-2xl p-6 border transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                style={{
+                  background: "#0d0818",
+                  borderColor: "rgba(139,92,246,0.25)",
+                }}
+              >
+                {/* Badge image */}
+                <div className="w-14 h-14 relative mb-5 shrink-0">
+                  <Image
+                    src="/images/ai-skills-fest-2026.png"
+                    alt="Microsoft AI Skills Fest 2026 Badge"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Status */}
+                <div className="flex items-center gap-1.5 mb-4">
+                  <span className="status-pulse w-1.5 h-1.5 rounded-full inline-block" style={{ background: "#a78bfa" }} />
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-widest"
+                    style={{ fontFamily: "var(--font-jetbrains-mono)", color: "#a78bfa" }}
+                  >
+                    VERIFIED COMPLETE
+                  </span>
+                </div>
+
+                <h3
+                  className="text-lg font-bold text-[#e8eeff] mb-1 leading-snug"
+                  style={{ fontFamily: "var(--font-syne)" }}
+                >
+                  AI Skills Fest
+                </h3>
+                <p
+                  className="text-xs mb-4"
+                  style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--ds-muted)" }}
+                >
+                  Microsoft
+                </p>
+
+                <div className="mt-auto">
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                    style={{
+                      fontFamily: "var(--font-jetbrains-mono)",
+                      background: "rgba(139,92,246,0.1)",
+                      color: "#a78bfa",
+                    }}
+                  >
+                    2026
+                  </span>
+                </div>
+              </motion.div>
+
             </div>
           </div>
         </section>
