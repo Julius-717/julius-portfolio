@@ -3,7 +3,6 @@ title: "Security scans that passed when they shouldn't"
 slug: dast-gate-fail-closed
 summary: "A DAST gate that records evidence first, then decides. It fails closed on critical findings, dropped targets, low coverage or unparseable output, and can prove on demand that it blocks."
 tags: ["DAST", "Fail-closed design", "Evidence", "SSDLC"]
-status: in-acceptance
 order: 1
 featured: true
 ---
@@ -80,7 +79,7 @@ This exercises the blocking path end to end: detection, the decision, the non-ze
 
 ## Outcome
 
-A DAST stage that cannot report green on a broken, partial or unreadable run, that leaves evidence for every run whatever the result, and that can prove on demand that it blocks. It is part of the secure SDLC pipeline, which is currently in acceptance.
+A DAST stage that cannot report green on a broken, partial or unreadable run, that leaves evidence for every run whatever the result, and that can prove on demand that it blocks. It runs as one stage of the [secure SDLC pipeline](/case-studies/secure-sdlc-pipeline).
 
 ## Lessons
 

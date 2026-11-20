@@ -53,6 +53,10 @@ const nextConfig: NextConfig = {
       "waf-cloudfront-network-security",
     ];
     return [
+      // Pages folded into others when the navigation was simplified.
+      { source: "/research", destination: "/notes", permanent: true },
+      { source: "/writing", destination: "/notes", permanent: true },
+      { source: "/education", destination: "/about#education", permanent: true },
       {
         source: "/case-studies/iam-least-privilege-controls",
         destination: "/case-studies/iam-least-privilege-review",

@@ -1,5 +1,4 @@
 import { EMPLOYER_NAME } from "@/lib/site";
-import type { Status } from "@/components/ui";
 
 /**
  * Experience timeline. This is the ONLY place the employer is named,
@@ -19,7 +18,6 @@ export interface SubRole {
 export interface Phase {
   period: string;
   title: string;
-  status?: Status;
   groups: { label?: string; items: string[] }[];
   caseStudies?: string[];
 }
@@ -39,7 +37,6 @@ export const PHASES: Phase[] = [
   {
     period: "Sep 2026 – present",
     title: "Ownership of the secure SDLC",
-    status: "in-acceptance",
     groups: [
       {
         label: "Rebuilt security scanning as scheduled AWS CodeBuild projects managed in OpenTofu, all writing to one evidence store with notifications",
@@ -92,19 +89,17 @@ export const PHASES: Phase[] = [
 ];
 
 /** Other verified work, not tied to a single phase. */
-export const OTHER_WORK: { title: string; status?: Status; detail: string; caseStudy?: string }[] = [
+export const OTHER_WORK: { title: string; detail: string; caseStudy?: string }[] = [
   {
     title: "Account-wide IAM least-privilege review",
-    status: "in-progress",
     detail:
       "Read-only collection, offline statement analysis, every suspected path confirmed with the IAM policy simulator, then granted-vs-used analysis for high-risk roles.",
     caseStudy: "iam-least-privilege-review",
   },
   {
     title: "SSH to AWS SSM Session Manager migration",
-    status: "in-progress",
     detail:
-      "Setup scripts for macOS/Linux and Windows, documented port forwarding, with the goal of retiring jumpboxes.",
+      "Moved engineer access onto Session Manager: setup scripts for macOS/Linux and Windows and documented port forwarding, replacing SSH keys and jumpboxes.",
     caseStudy: "ssh-to-ssm-session-manager",
   },
   {
@@ -121,7 +116,7 @@ export const OTHER_WORK: { title: string; status?: Status; detail: string; caseS
   {
     title: "Application security",
     detail:
-      "Fixed an XSS issue (Jinja2 autoescape); moved application config out of the codebase into environment variables; WAF rules for public API endpoints (in review).",
+      "Fixed an XSS issue (Jinja2 autoescape); moved application config out of the codebase into environment variables; authored WAF rules for public API endpoints.",
   },
   {
     title: "CVE remediation",

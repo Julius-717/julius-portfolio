@@ -15,7 +15,7 @@ function Level({ level }: { level: Proficiency }) {
   return (
     <span
       className={`inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 font-mono text-[0.7rem] ${
-        pro ? "border-brand/40 bg-brand/10 text-brand-soft" : "border-warn/40 bg-warn/5 text-warn"
+        pro ? "border-brand/40 bg-brand/10 text-brand-soft" : "border-line-strong text-muted"
       }`}
     >
       {pro ? "professional" : "developing"}
@@ -29,7 +29,7 @@ export default function ExpertisePage() {
       <PageHeader
         eyebrow="cat expertise.md"
         title="Expertise"
-        lede="Six domains, with each skill marked as professional (done in production) or developing (in progress, in review, or a research interest)."
+        lede="Six domains of production work, with research interests marked separately."
       >
         <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-sm">
           <div className="flex items-center gap-2">
@@ -42,7 +42,7 @@ export default function ExpertisePage() {
             <dt>
               <Level level="developing" />
             </dt>
-            <dd className="text-muted">in progress, in review, or research</dd>
+            <dd className="text-muted">research interest</dd>
           </div>
         </dl>
       </PageHeader>

@@ -4,7 +4,7 @@ import { getFeaturedCaseStudies } from "@/lib/case-studies";
 import { DOMAINS } from "@/lib/content/expertise";
 import { LINKS, SITE } from "@/lib/site";
 import CaseStudyCard from "@/components/CaseStudyCard";
-import ContactLinks from "@/components/ContactLinks";
+import ContactLinks, { configuredLinkCount } from "@/components/ContactLinks";
 import { ButtonLink, Container, Eyebrow, SectionHeading } from "@/components/ui";
 
 export const metadata: Metadata = {
@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 };
 
 const NOW = [
-  { text: "Owning the secure SDLC: scheduled, IaC-managed security scanning", status: "in acceptance" },
-  { text: "Leading a migration from SSH keys and jumpboxes to SSM Session Manager", status: "in progress" },
-  { text: "MSc Cyber Security, University of Essex", status: "in progress" },
+  { label: "role", text: "Owner of the secure SDLC for a production AI platform on AWS" },
+  { label: "recent", text: "Scheduled, IaC-managed SAST, SCA and DAST with a single evidence store" },
+  { label: "study", text: "MSc Cyber Security, University of Essex" },
 ];
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
         <div aria-hidden="true" className="hero-wash pointer-events-none absolute inset-0" />
         <div aria-hidden="true" className="bg-grid pointer-events-none absolute inset-0" />
         <div aria-hidden="true" className="bg-gradient-primary absolute inset-x-0 bottom-0 h-px opacity-70" />
-        <Container className="relative py-16 sm:py-24">
+        <Container className="relative pb-12 pt-14 sm:pb-16 sm:pt-20">
           <p className="font-mono text-sm text-muted">
             <span aria-hidden="true" className="text-accent">
               ${" "}
@@ -62,19 +62,19 @@ export default function Home() {
             ) : null}
           </div>
 
-          <ContactLinks className="mt-8" />
+          {configuredLinkCount() >= 2 ? <ContactLinks className="mt-6" /> : null}
         </Container>
       </section>
 
       <Container>
-        <section aria-labelledby="now-title" className="py-14">
+        <section aria-labelledby="now-title" className="pb-8 pt-10">
           <h2 id="now-title" className="sr-only">
-            Currently
+            At a glance
           </h2>
           <ul className="grid gap-3 md:grid-cols-3">
             {NOW.map((n) => (
               <li key={n.text} className="rounded-lg border border-line bg-surface px-4 py-3 shadow-card">
-                <p className="font-mono text-xs text-warn">{n.status}</p>
+                <p className="font-mono text-xs text-subtle">{n.label}</p>
                 <p className="mt-1 text-sm text-fg">{n.text}</p>
               </li>
             ))}
@@ -95,7 +95,7 @@ export default function Home() {
           <ul className="grid gap-5 md:grid-cols-3">
             {featured.map((s) => (
               <li key={s.slug}>
-                <CaseStudyCard study={s} featured />
+                <CaseStudyCard study={s} featured maxTags={2} />
               </li>
             ))}
           </ul>

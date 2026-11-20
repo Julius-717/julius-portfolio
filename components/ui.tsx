@@ -70,28 +70,6 @@ export function Tag({ children }: { children: ReactNode }) {
   );
 }
 
-export type Status = "complete" | "in-progress" | "in-acceptance";
-
-const STATUS_LABEL: Record<Status, string> = {
-  complete: "Complete",
-  "in-progress": "In progress",
-  "in-acceptance": "In acceptance",
-};
-
-export function StatusBadge({ status }: { status: Status }) {
-  const done = status === "complete";
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-xs ${
-        done ? "border-ok/30 text-ok" : "border-warn/40 text-warn"
-      }`}
-    >
-      <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${done ? "bg-ok" : "bg-warn"}`} />
-      {STATUS_LABEL[status]}
-    </span>
-  );
-}
-
 /** Honest empty state for sections that have no content yet. */
 export function EmptyState({
   title,
@@ -115,12 +93,15 @@ export function EmptyState({
   );
 }
 
+/** TODO markers are visible in `npm run dev` only; production builds omit them. */
+export const SHOW_TODOS = process.env.NODE_ENV === "development";
+
 /**
- * Visible placeholder for a fact that still needs confirming.
- * Deliberately conspicuous so nothing ships with it by accident;
- * `npm run check:todos` lists every one.
+ * Placeholder for a fact that still needs confirming. Conspicuous in dev,
+ * rendered as nothing in production. `npm run check:todos` lists every one.
  */
 export function Todo({ children }: { children: ReactNode }) {
+  if (!SHOW_TODOS) return null;
   return (
     <span className="mx-0.5 inline rounded border border-dashed border-warn/60 bg-warn/10 px-1.5 py-0.5 font-mono text-[0.8em] text-warn">
       TODO: {children}

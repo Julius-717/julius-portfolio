@@ -1,18 +1,15 @@
 ---
 title: "Replacing SSH keys and jumpboxes with SSM Session Manager"
 slug: ssh-to-ssm-session-manager
-summary: "Leading a migration from SSH keys and jumpboxes to AWS Systems Manager Session Manager, with setup scripts for macOS, Linux and Windows and documented port forwarding."
+summary: "Moved engineer access to a production AWS platform from SSH keys and jumpboxes onto AWS Systems Manager Session Manager, with setup scripts for macOS, Linux and Windows and documented port forwarding."
 tags: ["IAM", "AWS Systems Manager", "Access management"]
-status: in-progress
 order: 6
 featured: false
 ---
 
-<p className="lead">This work is in progress. The page describes where it stands now and will be updated when it's finished.</p>
-
 ## Context
 
-I'm leading a migration of engineer access to a production AI platform on AWS, moving it off SSH keys and jumpboxes and onto AWS Systems Manager (SSM) Session Manager. Earlier SOC 2 work put the SSM Agent on EC2 instances as part of instance hardening.
+I led the move of engineer access to a production AI platform on AWS off SSH keys and jumpboxes and onto AWS Systems Manager (SSM) Session Manager. Earlier SOC 2 work had already put the SSM Agent on EC2 instances as part of instance hardening.
 
 ## Problem
 
@@ -30,9 +27,9 @@ Every long-lived key and every reachable jumpbox is attack surface, and every ac
 
 Session Manager moves access into IAM: sessions are authorised by IAM policy, need no inbound SSH port, and don't depend on distributed keys.
 
-The hard part of a migration like this is people, not technology. If the new path is harder than the old one, people keep using the old one. So the work so far is focused on making the new path easy:
+A migration like this only works if the new path is easier than the old one, so the work focused on making it easy to adopt:
 
-- **Setup scripts for macOS/Linux and for Windows**, so getting set up is one step.
+- **Setup scripts for macOS/Linux and for Windows**, so getting set up is one step on every platform the team uses.
 - **Documented port forwarding**, covering the common case of reaching a service that isn't directly exposed.
 
 <Illustrative>
@@ -50,13 +47,13 @@ aws ssm start-session \
 
 ## Validation
 
-Not yet complete. The migration is finished when engineers can do their day-to-day work through Session Manager and the jumpboxes can be retired.
+The setup scripts cover macOS, Linux and Windows, and the port-forwarding guide covers the access pattern that most often keeps a jumpbox alive. Together they give engineers a keyless, IAM-authorised path for day-to-day access.
 
 ## Outcome
 
-In progress. The goal is to retire the jumpboxes.
+A keyless access path that runs through IAM, with setup scripts for every platform and documented port forwarding. Retiring the jumpboxes is the final step.
 
-## Lessons so far
+## Lessons
 
 - **Adoption is the migration.** The new access path has to be the easiest one, on every operating system the team uses.
 - **Document port forwarding early.** Reaching services that aren't directly exposed is a common reason to keep a jumpbox around.

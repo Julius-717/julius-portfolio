@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import type { Status } from "@/components/ui";
 
 const contentDir = path.join(process.cwd(), "content/case-studies");
 
@@ -10,7 +9,6 @@ export interface CaseStudyMeta {
   slug: string;
   summary: string;
   tags: string[];
-  status: Status;
   order: number;
   featured: boolean;
   readTime: string;
@@ -33,7 +31,6 @@ function parse(filename: string) {
     slug,
     summary: data.summary,
     tags: data.tags ?? [],
-    status: data.status ?? "complete",
     order: data.order ?? 99,
     featured: Boolean(data.featured),
     readTime: readingTime(content),

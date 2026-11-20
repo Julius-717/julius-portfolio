@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { getAllCaseStudies, getCaseStudyBySlug } from "@/lib/case-studies";
 import { mdxComponents } from "@/components/mdx";
-import { Container, StatusBadge, Tag } from "@/components/ui";
+import { Container, Tag } from "@/components/ui";
 import { SITE } from "@/lib/site";
 
 export const dynamicParams = false;
@@ -78,10 +78,7 @@ export default async function CaseStudyPage({ params }: Props) {
       </nav>
 
       <header className="border-b border-line pb-8 pt-6">
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <StatusBadge status={meta.status} />
-          <span className="font-mono text-xs text-subtle">{meta.readTime}</span>
-        </div>
+        <p className="mb-4 font-mono text-xs text-subtle">{meta.readTime}</p>
         <h1 className="text-3xl font-semibold leading-tight text-fg sm:text-4xl">{meta.title}</h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">{meta.summary}</p>
         <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Topics">

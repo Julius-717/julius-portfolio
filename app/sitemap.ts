@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getAllCaseStudies } from "@/lib/case-studies";
-import { NAV, SITE } from "@/lib/site";
+import { NAV, SECONDARY_NAV, SITE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const pages = ["/", ...NAV.map((n) => n.href)];
+  const pages = ["/", ...[...NAV, ...SECONDARY_NAV].map((n) => n.href)];
   const studies = getAllCaseStudies().map((s) => `/case-studies/${s.slug}`);
   return [...pages, ...studies].map((path) => ({
     url: `${SITE.url}${path === "/" ? "" : path}`,

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EMPLOYMENT, OTHER_WORK, PHASES } from "@/lib/content/experience";
 import { getAllCaseStudies } from "@/lib/case-studies";
-import { Container, PageHeader, StatusBadge, Todo } from "@/components/ui";
+import { Container, PageHeader, SHOW_TODOS, Todo } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Experience",
@@ -51,10 +51,7 @@ export default function ExperiencePage() {
                 className="absolute -left-[1.85rem] top-1.5 h-3 w-3 rounded-full border-2 border-brand bg-bg sm:-left-[2.35rem]"
               />
               <p className="font-mono text-sm text-accent">{p.period}</p>
-              <div className="mt-1 flex flex-wrap items-center gap-3">
-                <h3 className="text-xl font-semibold text-fg">{p.title}</h3>
-                {p.status ? <StatusBadge status={p.status} /> : null}
-              </div>
+              <h3 className="mt-1 text-xl font-semibold text-fg">{p.title}</h3>
               {p.groups.map((g, i) => (
                 <div key={i} className="mt-3">
                   {g.label ? <p className="leading-relaxed text-fg">{g.label}:</p> : null}
@@ -80,6 +77,7 @@ export default function ExperiencePage() {
               ) : null}
             </li>
           ))}
+          {SHOW_TODOS ? (
           <li className="relative">
             <span
               aria-hidden="true"
@@ -90,6 +88,7 @@ export default function ExperiencePage() {
               <Todo>earlier mobile-platform work: confirm what to include for this period</Todo>
             </p>
           </li>
+          ) : null}
         </ol>
       </article>
 
@@ -100,10 +99,7 @@ export default function ExperiencePage() {
         <ul className="mt-6 grid gap-4 md:grid-cols-2">
           {OTHER_WORK.map((w) => (
             <li key={w.title} className="rounded-xl border border-line bg-surface p-5 shadow-card">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-medium text-fg">{w.title}</h3>
-                {w.status ? <StatusBadge status={w.status} /> : null}
-              </div>
+              <h3 className="font-medium text-fg">{w.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{w.detail}</p>
               {w.caseStudy ? (
                 <Link href={`/case-studies/${w.caseStudy}`} className="mt-3 inline-block text-sm text-accent hover:text-accent-strong">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LINKS, NAV, SITE } from "@/lib/site";
+import { LINKS, NAV, SECONDARY_NAV, SITE } from "@/lib/site";
 
 export default function SiteFooter() {
   const external = [
@@ -19,7 +19,7 @@ export default function SiteFooter() {
         </div>
         <nav aria-label="Footer">
           <ul className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm">
-            {NAV.map(({ href, label }) => (
+            {[...NAV, ...SECONDARY_NAV].map(({ href, label }) => (
               <li key={href}>
                 <Link href={href} className="inline-flex min-h-9 items-center text-muted hover:text-fg">
                   {label}

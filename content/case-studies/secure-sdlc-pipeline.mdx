@@ -3,7 +3,6 @@ title: "Building a secure SDLC pipeline"
 slug: secure-sdlc-pipeline
 summary: "SAST, SCA, DAST, dependency monitoring and API smoke tests rebuilt as scheduled, infrastructure-as-code build projects with least-privilege roles and a single evidence store."
 tags: ["DevSecOps", "AWS CodeBuild", "OpenTofu", "Least privilege", "SOC 2"]
-status: in-acceptance
 order: 2
 featured: true
 ---
@@ -80,8 +79,6 @@ resource "aws_cloudwatch_event_rule" "sca_nightly" {
 - Every project, role, and schedule is in code, so the review question "what runs and with what permissions?" is answered by reading a plan rather than clicking through consoles.
 - Each run writes to the evidence store whatever the result, so a missing entry is itself a signal.
 - The DAST stage has a self-test that must fail, proving the gate blocks.
-
-The pipeline is **currently in acceptance**.
 
 ## Outcome
 

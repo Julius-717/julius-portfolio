@@ -37,7 +37,7 @@ export default function SiteHeader() {
           julius-gachuhi
         </Link>
 
-        <nav aria-label="Primary" className="hidden lg:block">
+        <nav aria-label="Primary" className="hidden md:block">
           <ul className="flex items-center gap-1">
             {NAV.map(({ href, label }) => {
               const active = isActive(pathname, href);
@@ -60,7 +60,7 @@ export default function SiteHeader() {
 
         <button
           type="button"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-line-strong bg-surface text-fg hover:border-brand lg:hidden"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-line-strong bg-surface text-fg hover:border-brand md:hidden"
           aria-expanded={open}
           aria-controls={menuId}
           onClick={() => setOpen((v) => !v)}
@@ -80,7 +80,7 @@ export default function SiteHeader() {
         id={menuId}
         aria-label="Primary"
         hidden={!open}
-        className="border-t border-line bg-nav lg:hidden"
+        className="border-t border-line bg-nav md:hidden"
       >
         <ul className="mx-auto max-w-5xl px-5 py-3 sm:px-8">
           {NAV.map(({ href, label }) => {

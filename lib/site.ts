@@ -52,8 +52,8 @@ export const NAV = [
   { href: "/expertise", label: "Expertise" },
   { href: "/experience", label: "Experience" },
   { href: "/about", label: "About" },
-  { href: "/research", label: "Research & Labs" },
-  { href: "/writing", label: "Writing" },
-  { href: "/education", label: "Education" },
   { href: "/contact", label: "Contact" },
 ] as const;
+
+/** Footer-only links: pages that exist but don't earn a place in the header yet. */
+export const SECONDARY_NAV = [{ href: "/notes", label: "Notes" }] as const;

@@ -1,10 +1,16 @@
 import { LINKS } from "@/lib/site";
-import { Todo } from "@/components/ui";
+import { SHOW_TODOS, Todo } from "@/components/ui";
+
+/** How many contact links are configured; the hero hides a lone link. */
+export function configuredLinkCount() {
+  return [LINKS.github, LINKS.linkedin, LINKS.email].filter(Boolean).length;
+}
 
 /**
- * GitHub / LinkedIn / email as plain text links. Anything not configured is
- * shown as a visible TODO (see lib/site.ts) so it can't be missed before deploy.
+ * GitHub / LinkedIn / email as plain text links. With showTodos, links that
+ * aren't configured show a TODO marker in dev (nothing in production).
  */
+
 export default function ContactLinks({ className = "", showTodos = false }: { className?: string; showTodos?: boolean }) {
   const items = [
     { label: "GitHub", href: LINKS.github, external: true },
@@ -26,7 +32,7 @@ export default function ContactLinks({ className = "", showTodos = false }: { cl
               {external ? <span className="sr-only"> (opens in a new tab)</span> : null}
             </a>
           </li>
-        ) : showTodos ? (
+        ) : showTodos && SHOW_TODOS ? (
           <li key={label}>
             <Todo>{label} link: set NEXT_PUBLIC_{label.toUpperCase()}</Todo>
           </li>

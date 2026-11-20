@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Container, PageHeader, Todo } from "@/components/ui";
+import { CREDENTIALS } from "@/lib/content/credentials";
 import photo from "@/public/images/me.jpg";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "From mobile engineering to AWS security and ownership of the secure SDLC. MSc Cyber Security (in progress) with research interests in cloud IAM attack-path analysis and DevSecOps.",
+    "From mobile engineering to AWS security and ownership of the secure SDLC. MSc Cyber Security at the University of Essex, with research interests in cloud IAM attack-path analysis and DevSecOps.",
   alternates: { canonical: "/about" },
   openGraph: { url: "/about" },
 };
@@ -30,9 +31,9 @@ const JOURNEY = [
     body: (
       <>
         In 2026 I moved into AWS security, starting with SOC 2 control remediation: logging and monitoring, threat
-        detection, network isolation, edge protection, data protection, EC2 hardening and IAM hygiene. I&apos;ve also run
-        an account-wide IAM least-privilege review, and I&apos;m leading a migration of engineer access from SSH keys
-        and jumpboxes to SSM Session Manager.
+        detection, network isolation, edge protection, data protection, EC2 hardening and IAM hygiene. I also ran an
+        account-wide IAM least-privilege review and moved engineer access from SSH keys and jumpboxes to SSM Session
+        Manager.
       </>
     ),
   },
@@ -42,8 +43,8 @@ const JOURNEY = [
     body: (
       <>
         Since September 2026 I&apos;ve owned the secure software development lifecycle. I rebuilt security scanning as
-        scheduled, infrastructure-as-code build projects that all write to one evidence store; that work is in
-        acceptance. See <Link href="/case-studies/secure-sdlc-pipeline">the pipeline case study</Link>.
+        scheduled, infrastructure-as-code build projects that all write to one evidence store. See{" "}
+        <Link href="/case-studies/secure-sdlc-pipeline">the pipeline case study</Link>.
       </>
     ),
   },
@@ -93,16 +94,48 @@ export default function AboutPage() {
             </p>
           </section>
 
-          <section aria-labelledby="study-title" className="mt-16">
-            <h2 id="study-title" className="text-2xl font-semibold text-fg">
-              Study and research interests
+          <section id="education" aria-labelledby="education-title" className="mt-16 scroll-mt-24">
+            <h2 id="education-title" className="text-2xl font-semibold text-fg">
+              Education and credentials
             </h2>
-            <p className="mt-4 leading-relaxed text-muted">
-              I&apos;m studying for an <strong className="font-medium text-fg">MSc in Cyber Security at the University of Essex</strong>{" "}
-              (in progress; <Todo>start date and expected completion</Todo>).
-            </p>
-            <p className="mt-4 leading-relaxed text-muted">My research interests are:</p>
-            <ul className="mt-3 list-disc space-y-2 pl-5 text-muted marker:text-line-strong">
+
+            <div className="mt-6 rounded-xl border border-line bg-surface p-5 shadow-card sm:p-6">
+              <h3 className="text-lg font-semibold text-fg">MSc Cyber Security</h3>
+              <p className="mt-1 text-muted">
+                University of Essex · current <Todo>start date and expected completion</Todo>
+              </p>
+            </div>
+
+            <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+              {CREDENTIALS.map((c) => (
+                <li key={c.name} className="flex gap-4 rounded-xl border border-line bg-surface p-5 shadow-card">
+                  <Image src={c.image} alt="" width={56} height={56} sizes="56px" className="h-14 w-14 shrink-0 object-contain" />
+                  <div className="min-w-0">
+                    <h3 className="font-medium text-fg">{c.name}</h3>
+                    <p className="mt-0.5 text-sm text-muted">
+                      {c.issuer} · {c.year}
+                    </p>
+                    {c.credentialUrl ? (
+                      <a
+                        href={c.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex min-h-9 items-center text-sm text-accent hover:text-accent-strong"
+                      >
+                        Verify credential<span className="sr-only"> for {c.name} (opens in a new tab)</span>
+                      </a>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="research-title" className="mt-16">
+            <h2 id="research-title" className="text-2xl font-semibold text-fg">
+              Research interests
+            </h2>
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-muted marker:text-line-strong">
               <li>
                 <span className="text-fg">Cloud and IAM attack-path analysis:</span> how combinations of permissions,
                 trust relationships and conditions add up to paths that no single policy reveals.
@@ -113,8 +146,11 @@ export default function AboutPage() {
               </li>
             </ul>
             <p className="mt-4 text-muted">
-              Independent work will appear under <Link href="/research" className="text-accent underline underline-offset-4">Research &amp; Labs</Link>,
-              kept separate from professional work.
+              Independent research and writing will appear under{" "}
+              <Link href="/notes" className="text-accent underline underline-offset-4">
+                Notes
+              </Link>
+              , kept separate from professional work.
             </p>
           </section>
         </div>
