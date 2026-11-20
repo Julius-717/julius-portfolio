@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const NOW = [
   { label: "role", text: "Owner of the secure SDLC for a production AI platform on AWS" },
   { label: "recent", text: "Scheduled, IaC-managed SAST, SCA and DAST with a single evidence store" },
-  { label: "study", text: "MSc Cyber Security, University of Essex" },
+  { label: "next", text: "MSc Cyber Security, University of Essex, from January 2027" },
 ];
 
 export default function Home() {
@@ -146,10 +146,10 @@ export default function Home() {
               </p>
             </li>
             <li>
-              <h3 className="font-medium text-fg">Prepare, human applies, verify</h3>
+              <h3 className="font-medium text-fg">Prepare, apply, verify</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                I use AI-assisted engineering for AWS changes under one rule: the change is prepared, a human applies
-                it, and the result is verified from read-only output.
+                Production AWS changes are prepared in advance, applied deliberately by a person, and then verified
+                from read-only output.
               </p>
             </li>
           </ul>

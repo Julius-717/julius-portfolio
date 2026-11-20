@@ -97,7 +97,6 @@ export const DOMAINS: Domain[] = [
       { name: "Release engineering", detail: "App store launch, release-test bug rounds and hotfixes, signing-certificate management", level: "professional" },
       { name: "Payments", detail: "Google Play Billing upgrade via RevenueCat", level: "professional" },
       { name: "Python", detail: "AWS Lambda batch processing and reliability fixes", level: "professional" },
-      { name: "AI-assisted engineering", detail: "Claude Code under a prepare / human applies / verify-read-only rule for AWS changes", level: "professional" },
     ],
   },
 ];

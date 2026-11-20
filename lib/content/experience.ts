@@ -128,9 +128,4 @@ export const OTHER_WORK: { title: string; detail: string; caseStudy?: string }[]
     detail:
       "Resolved CodeBuild failures caused by Docker Hub rate limits by moving base images off unauthenticated Docker Hub pulls.",
   },
-  {
-    title: "Working method",
-    detail:
-      "AI-assisted engineering with Claude Code under a strict rule for AWS changes: prepare the change, a human applies it, then verify from read-only output.",
-  },
 ];

@@ -8,7 +8,7 @@ import photo from "@/public/images/me.jpg";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "From mobile engineering to AWS security and ownership of the secure SDLC. MSc Cyber Security at the University of Essex, with research interests in cloud IAM attack-path analysis and DevSecOps.",
+    "From mobile engineering to AWS security and ownership of the secure SDLC. MSc Cyber Security at the University of Essex from January 2027, with research interests in cloud IAM attack-path analysis and DevSecOps.",
   alternates: { canonical: "/about" },
   openGraph: { url: "/about" },
 };
@@ -82,18 +82,6 @@ export default function AboutPage() {
             </ol>
           </section>
 
-          <section aria-labelledby="method-title" className="mt-16">
-            <h2 id="method-title" className="text-2xl font-semibold text-fg">
-              Working method
-            </h2>
-            <p className="mt-4 leading-relaxed text-muted">
-              I use AI-assisted engineering (Claude Code) for AWS work under one rule:{" "}
-              <strong className="font-medium text-fg">prepare, human applies, verify from read-only output.</strong>{" "}
-              The assistant helps prepare a change; a human applies it; the result is then checked using read-only
-              commands.
-            </p>
-          </section>
-
           <section id="education" aria-labelledby="education-title" className="mt-16 scroll-mt-24">
             <h2 id="education-title" className="text-2xl font-semibold text-fg">
               Education and credentials
@@ -102,7 +90,7 @@ export default function AboutPage() {
             <div className="mt-6 rounded-xl border border-line bg-surface p-5 shadow-card sm:p-6">
               <h3 className="text-lg font-semibold text-fg">MSc Cyber Security</h3>
               <p className="mt-1 text-muted">
-                University of Essex · current <Todo>start date and expected completion</Todo>
+                University of Essex · starts January 2027 <Todo>expected completion date</Todo>
               </p>
             </div>
 
