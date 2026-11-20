@@ -6,7 +6,7 @@ import { Container, PageHeader } from "@/components/ui";
 export const metadata: Metadata = {
   title: "Case studies",
   description:
-    "Cloud security and DevSecOps case studies: fail-closed DAST gates, a secure SDLC pipeline, IAM least-privilege review, edge access control, observability and SSM Session Manager.",
+    "Cloud security and DevSecOps case studies: fail-closed DAST gates, a secure SDLC pipeline, IAM least-privilege review, observability and SSM Session Manager.",
   alternates: { canonical: "/case-studies" },
   openGraph: { url: "/case-studies" },
 };

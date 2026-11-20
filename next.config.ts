@@ -62,6 +62,8 @@ const nextConfig: NextConfig = {
         destination: "/case-studies/iam-least-privilege-review",
         permanent: true,
       },
+      // Hidden (draft) case study.
+      { source: "/case-studies/edge-access-control-review", destination: "/case-studies", permanent: false },
       ...retired.map((slug) => ({
         source: `/case-studies/${slug}`,
         destination: "/case-studies",

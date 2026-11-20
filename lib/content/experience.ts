@@ -68,7 +68,6 @@ export const PHASES: Phase[] = [
         ],
       },
     ],
-    caseStudies: ["edge-access-control-review"],
   },
   {
     period: "Late 2025 – mid 2026",

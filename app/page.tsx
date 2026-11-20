@@ -88,7 +88,7 @@ export default function Home() {
             title="Featured case studies"
             action={
               <Link href="/case-studies" className="text-sm text-accent hover:text-accent-strong">
-                All six case studies →
+                All case studies →
               </Link>
             }
           />
