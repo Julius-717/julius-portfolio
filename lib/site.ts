@@ -36,7 +36,7 @@ export const PLATFORM_DESCRIPTION = "a production AI platform on AWS";
  */
 export const LINKS = {
   email: process.env.NEXT_PUBLIC_EMAIL || null,
-  linkedin: process.env.NEXT_PUBLIC_LINKEDIN || null,
+  linkedin: process.env.NEXT_PUBLIC_LINKEDIN || "https://www.linkedin.com/in/julius-gachuhi/",
   // TODO(julius): confirm this is the GitHub profile you want public (taken from this repo's git history).
   github: process.env.NEXT_PUBLIC_GITHUB || "https://github.com/Julius-717",
   /**
