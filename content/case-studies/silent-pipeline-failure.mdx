@@ -1,0 +1,102 @@
+---
+title: "A pipeline that failed silently"
+slug: silent-pipeline-failure
+summary: "A Python Lambda batch job reported success while failing on one item. Fixed the root cause, then made partial failure visible with a 'partial' status, per-item EMF metrics and an alarm defined in IaC."
+tags: ["Reliability", "AWS Lambda", "CloudWatch EMF", "Observability as code"]
+status: complete
+order: 5
+featured: false
+---
+
+## Context
+
+A production AI platform on AWS runs batch processing in a Python AWS Lambda function: a job takes a set of items, processes each one, and reports a result for the run.
+
+## Problem
+
+An empty-chunk bug made the job **fail on one item while reporting success for the whole run**. Nothing errored loudly, the run looked green, and the item simply wasn't processed.
+
+The bug was one problem. The bigger problem was that the job's reporting model had only two outcomes, success or failure, and a run where *most* items succeeded was rounded up to success.
+
+## Risk
+
+Silent partial failure is the worst kind: the people who depend on the output don't know anything is missing, and operators have no signal to investigate. In a security context, the same pattern is how a control quietly stops covering everything it claims to cover.
+
+## Approach
+
+Fixing the bug alone would have left the job just as capable of hiding the next one, so the fix had four parts:
+
+1. **Fix the root cause.** The empty-chunk case is handled correctly.
+2. **Add a `partial` status.** A run is now `success` only if every item succeeded; if some failed, it is `partial`. Partial failure has its own name, so it can't be rounded up.
+3. **Emit per-item failure metrics using CloudWatch Embedded Metric Format (EMF).** Failures are counted at item level, from structured log lines, without separate metric API calls.
+4. **Alarm on failures, defined in infrastructure as code**, so the alarm exists wherever the job does.
+
+<Illustrative>
+
+```python
+# Illustrative: per-item outcome tracking with a CloudWatch EMF log line.
+import json, time
+
+def run(items):
+    failed = 0
+    for item in items:
+        try:
+            process(item)
+        except Exception:
+            failed += 1
+            log_item_failure(item)
+
+    print(json.dumps({
+        "_aws": {
+            "Timestamp": int(time.time() * 1000),
+            "CloudWatchMetrics": [{
+                "Namespace": "<namespace>",
+                "Dimensions": [["Job"]],
+                "Metrics": [{"Name": "ItemFailures", "Unit": "Count"}],
+            }],
+        },
+        "Job": "<job-name>",
+        "ItemFailures": failed,
+    }))
+
+    if failed == 0:
+        return "success"
+    return "partial" if failed < len(items) else "failed"
+```
+
+</Illustrative>
+
+<Illustrative>
+
+```hcl
+# Illustrative: the alarm lives next to the function in IaC.
+resource "aws_cloudwatch_metric_alarm" "item_failures" {
+  alarm_name          = "<job-name>-item-failures"
+  namespace           = "<namespace>"
+  metric_name         = "ItemFailures"
+  dimensions          = { Job = "<job-name>" }
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 0
+  comparison_operator = "GreaterThanThreshold"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = [var.alerts_topic]
+}
+```
+
+</Illustrative>
+
+## Validation
+
+The fix changes what a run is allowed to *claim*. A run with any failed item can no longer report `success`, and the failure is counted and alarmed rather than relying on someone reading logs.
+
+## Outcome
+
+The root cause is fixed, partial failure has its own status, item-level failures are measured, and an alarm defined in infrastructure as code fires when they occur.
+
+## Lessons
+
+- **Success should be computed, not assumed.** If a job can't prove every item succeeded, it shouldn't say it did.
+- **Give partial failure a name.** Binary success/failure invites rounding up.
+- **Fix the bug, then fix whatever let it hide.** The second fix catches the bugs you haven't met yet.

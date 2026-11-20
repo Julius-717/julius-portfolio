@@ -1,0 +1,95 @@
+---
+title: "Building a secure SDLC pipeline"
+slug: secure-sdlc-pipeline
+summary: "SAST, SCA, DAST, dependency monitoring and API smoke tests rebuilt as scheduled, infrastructure-as-code build projects with least-privilege roles and a single evidence store."
+tags: ["DevSecOps", "AWS CodeBuild", "OpenTofu", "Least privilege", "SOC 2"]
+status: in-acceptance
+order: 2
+featured: true
+---
+
+## Context
+
+In September 2026 I took ownership of the secure software development lifecycle (SSDLC) for a production AI platform on AWS, after working through SOC 2 control remediation on the same environment earlier in the year.
+
+## Problem
+
+For a security programme that has to stand up to an audit, "we run scanners" isn't enough. You need to be able to answer, from something other than memory:
+
+- What runs, on what schedule, with what permissions?
+- Did it actually run last night, and what did it find?
+- Where is the evidence, and is it all in one place?
+
+Before the rebuild, static analysis ran on a general-purpose CI server.
+
+## Risk
+
+- **Scanners are privileged software.** A scanner with broad credentials is an attractive target in its own right.
+- **Hand-configured jobs drift.** A schedule quietly disabled, or a permission quietly widened, is invisible until someone looks.
+- **Scattered results mean no evidence.** If findings live in several tools' UIs, nobody has the complete picture and an auditor has nothing durable to look at.
+
+## Approach
+
+I rebuilt security scanning as a set of **scheduled AWS CodeBuild projects, all defined in OpenTofu**. Each check is its own project with its own **least-privilege IAM role**, and every project writes to **one evidence store**, with notifications on the result.
+
+| Check | Category | Cadence |
+| --- | --- | --- |
+| Static analysis | SAST, moved off the CI server, with a dedicated least-privilege role | Scheduled |
+| Dependency analysis | Software composition analysis (SCA) | Nightly |
+| Dynamic testing | DAST, behind a [fail-closed gate](/case-studies/dast-gate-fail-closed) | Weekly |
+| Dependency monitoring | Automated dependency-update configuration plus an alerts report | Weekly report |
+| API smoke tests | Functional smoke/regression checks against the API | Nightly |
+
+Scan results are also surfaced in the product UI.
+
+<PipelineDiagram />
+
+The pattern each project follows, in outline:
+
+<Illustrative>
+
+```hcl
+# Illustrative: one scheduled scan project. Names and values are placeholders.
+resource "aws_iam_role" "sca_scan" {
+  name               = "sca-scan"
+  assume_role_policy = data.aws_iam_policy_document.codebuild_trust.json
+}
+
+# Only what this one job needs: read the source, write its own evidence prefix, log.
+resource "aws_iam_role_policy" "sca_scan" {
+  role   = aws_iam_role.sca_scan.id
+  policy = data.aws_iam_policy_document.sca_scan_minimal.json
+}
+
+resource "aws_codebuild_project" "sca_scan" {
+  name         = "sca-scan"
+  service_role = aws_iam_role.sca_scan.arn
+  # source, environment and buildspec omitted
+}
+
+# One way to run it on a schedule: a cron-style rule that starts the build.
+resource "aws_cloudwatch_event_rule" "sca_nightly" {
+  schedule_expression = "cron(0 2 * * ? *)"
+}
+```
+
+</Illustrative>
+
+## Validation
+
+- Every project, role, and schedule is in code, so the review question "what runs and with what permissions?" is answered by reading a plan rather than clicking through consoles.
+- Each run writes to the evidence store whatever the result, so a missing entry is itself a signal.
+- The DAST stage has a self-test that must fail, proving the gate blocks.
+
+The pipeline is **currently in acceptance**.
+
+## Outcome
+
+Five scheduled, IaC-managed security checks, each with its own least-privilege role, writing to a single evidence store, with notifications and results visible in the product UI.
+
+## Lessons
+
+- **Apply least privilege to the security tooling too.** One role per scanner keeps a compromised or misbehaving job contained.
+- **Put the schedule in code.** "Is it still running?" should be answerable from the repository.
+- **Treat evidence as a first-class output**, not a by-product of a scan.
+- **Be precise about what each check proves.** The API checks are smoke and regression tests; they confirm the API works, not how it performs under load.

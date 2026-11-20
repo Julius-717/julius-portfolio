@@ -1,0 +1,89 @@
+---
+title: "Security scans that passed when they shouldn't"
+slug: dast-gate-fail-closed
+summary: "A DAST gate that records evidence first, then decides. It fails closed on critical findings, dropped targets, low coverage or unparseable output, and can prove on demand that it blocks."
+tags: ["DAST", "Fail-closed design", "Evidence", "SSDLC"]
+status: in-acceptance
+order: 1
+featured: true
+---
+
+## Context
+
+I own the secure software development lifecycle for a production AI platform on AWS. Part of that is a weekly dynamic application security test (DAST): a scanner runs against the platform's deployed endpoints on a schedule, as one stage of a larger scanning pipeline.
+
+## Problem
+
+A scanner that exits cleanly hasn't necessarily done its job. When I designed the gate I listed the ways a run can look green without being trustworthy:
+
+- **The output can't be read.** The scanner crashed, was killed, or wrote something malformed, so there is nothing to evaluate.
+- **Targets went missing.** Some in-scope endpoints never appear in the results. They weren't tested, so absence of findings means nothing.
+- **Coverage dropped.** The run completed but covered noticeably less than it should have.
+- **A critical finding is present** but nothing downstream turns that into a failure.
+
+In every one of these the obvious implementation, "exit code 0 means pass", reports success.
+
+## Risk
+
+A scan that passes without having scanned is worse than no scan, because it creates assurance that isn't real. It also produces misleading audit evidence: a green row in a report that says "DAST ran" when it effectively didn't.
+
+## Approach
+
+Two design rules shaped the gate.
+
+**1. Record evidence first, then decide.** Whatever happens, the raw scanner output and the run metadata are written to the pipeline's evidence store *before* any pass/fail logic runs. A run that fails, or fails to parse, still leaves a record of exactly what happened.
+
+**2. Fail closed.** The gate only passes when it can positively show that the run was good. It fails on any of:
+
+| Condition | Why it fails the run |
+| --- | --- |
+| Any critical finding | The thing the scan exists to catch |
+| Any in-scope target missing from results | Untested is not the same as clean |
+| Coverage below 98% | A partial run can't vouch for the whole surface |
+| Output that can't be parsed | "Couldn't tell" is treated as a failure, not a pass |
+
+A failure exits non-zero and sends a notification, so it can't be missed.
+
+<DastGateDiagram />
+
+<Illustrative>
+
+```python
+# Illustrative: the shape of a fail-closed gate, not the production code.
+def evaluate(raw_output, expected_targets):
+    store_evidence(raw_output)            # always first, whatever happens next
+
+    results = try_parse(raw_output)
+    if results is None:
+        return fail("scanner output could not be parsed")
+
+    missing = expected_targets - results.scanned_targets
+    if missing:
+        return fail(f"{len(missing)} in-scope target(s) missing from results")
+
+    if results.coverage < 0.98:
+        return fail(f"coverage {results.coverage:.0%} is below 98%")
+
+    if any(f.severity == "critical" for f in results.findings):
+        return fail("critical finding present")
+
+    return ok()
+```
+
+</Illustrative>
+
+## Validation
+
+A gate that has never blocked anything is unproven, and you can't wait for a real critical finding to find out whether it works. So the gate has a **self-test mode**: it runs one deliberately harmless check that reports at critical severity, and the run is expected to fail. If the gate lets the self-test through, the gate is broken.
+
+This exercises the blocking path end to end: detection, the decision, the non-zero exit and the notification. The evidence-first rule means a self-test run is recorded like any other.
+
+## Outcome
+
+A DAST stage that cannot report green on a broken, partial or unreadable run, that leaves evidence for every run whatever the result, and that can prove on demand that it blocks. It is part of the secure SDLC pipeline, which is currently in acceptance.
+
+## Lessons
+
+- **Test the failure path of a security control, not just the happy path.** A self-test that must fail is cheap and settles the question.
+- **Make "unknown" a failure.** Most silent passes come from treating missing or unreadable data as "nothing found".
+- **Separate recording from deciding.** If the evidence is written first, a bug in the decision logic can't also destroy the record of what happened.

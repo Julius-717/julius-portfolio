@@ -1,0 +1,62 @@
+---
+title: "Replacing SSH keys and jumpboxes with SSM Session Manager"
+slug: ssh-to-ssm-session-manager
+summary: "Leading a migration from SSH keys and jumpboxes to AWS Systems Manager Session Manager, with setup scripts for macOS, Linux and Windows and documented port forwarding."
+tags: ["IAM", "AWS Systems Manager", "Access management"]
+status: in-progress
+order: 6
+featured: false
+---
+
+<p className="lead">This work is in progress. The page describes where it stands now and will be updated when it's finished.</p>
+
+## Context
+
+I'm leading a migration of engineer access to a production AI platform on AWS, moving it off SSH keys and jumpboxes and onto AWS Systems Manager (SSM) Session Manager. Earlier SOC 2 work put the SSM Agent on EC2 instances as part of instance hardening.
+
+## Problem
+
+Access built on SSH keys and jumpboxes has some well-known weaknesses:
+
+- **Keys are long-lived and hard to account for.** It's difficult to say with confidence who holds which key and whether it's still needed.
+- **Jumpboxes are infrastructure to secure.** They need inbound network access, patching and monitoring of their own.
+- **Access lives outside IAM**, so it doesn't benefit from the same identity controls, least-privilege policies and audit trail as everything else.
+
+## Risk
+
+Every long-lived key and every reachable jumpbox is attack surface, and every access path outside IAM is one that IAM-based review can't see.
+
+## Approach
+
+Session Manager moves access into IAM: sessions are authorised by IAM policy, need no inbound SSH port, and don't depend on distributed keys.
+
+The hard part of a migration like this is people, not technology. If the new path is harder than the old one, people keep using the old one. So the work so far is focused on making the new path easy:
+
+- **Setup scripts for macOS/Linux and for Windows**, so getting set up is one step.
+- **Documented port forwarding**, covering the common case of reaching a service that isn't directly exposed.
+
+<Illustrative>
+
+```bash
+# Illustrative: port forwarding to a remote host through Session Manager.
+# No SSH key, no jumpbox, no inbound port. Placeholders only.
+aws ssm start-session \
+  --target "<instance-id>" \
+  --document-name AWS-StartPortForwardingSessionToRemoteHost \
+  --parameters 'host=<remote-host>,portNumber=<remote-port>,localPortNumber=<local-port>'
+```
+
+</Illustrative>
+
+## Validation
+
+Not yet complete. The migration is finished when engineers can do their day-to-day work through Session Manager and the jumpboxes can be retired.
+
+## Outcome
+
+In progress. The goal is to retire the jumpboxes.
+
+## Lessons so far
+
+- **Adoption is the migration.** The new access path has to be the easiest one, on every operating system the team uses.
+- **Document port forwarding early.** Reaching services that aren't directly exposed is a common reason to keep a jumpbox around.

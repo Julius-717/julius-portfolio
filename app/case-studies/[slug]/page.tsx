@@ -1,110 +1,122 @@
-import { getAllCaseStudies, getCaseStudyBySlug } from '@/lib/case-studies';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import MDXContent from '@/components/MDXContent';
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import { getAllCaseStudies, getCaseStudyBySlug } from "@/lib/case-studies";
+import { mdxComponents } from "@/components/mdx";
+import { Container, StatusBadge, Tag } from "@/components/ui";
+import { SITE } from "@/lib/site";
 
-export async function generateStaticParams() {
-  const studies = getAllCaseStudies();
-  return studies.map((s) => ({ slug: s.slug }));
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getAllCaseStudies().map((s) => ({ slug: s.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const { meta } = getCaseStudyBySlug(slug);
-    return {
-      title: `${meta.title} | Julius Gachuhi`,
-      description: meta.summary,
-    };
-  } catch {
-    return { title: 'Case Study | Julius Gachuhi' };
-  }
+  const study = getCaseStudyBySlug(slug);
+  if (!study) return {};
+  const url = `/case-studies/${slug}`;
+  return {
+    title: study.meta.title,
+    description: study.meta.summary,
+    alternates: { canonical: url },
+    openGraph: { type: "article", url, title: study.meta.title, description: study.meta.summary },
+    twitter: { title: study.meta.title, description: study.meta.summary },
+  };
 }
 
-export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CaseStudyPage({ params }: Props) {
   const { slug } = await params;
-  let meta, content;
-  try {
-    ({ meta, content } = getCaseStudyBySlug(slug));
-  } catch {
-    notFound();
-  }
+  const study = getCaseStudyBySlug(slug);
+  if (!study) notFound();
+  const { meta, content } = study;
+
+  const all = getAllCaseStudies();
+  const idx = all.findIndex((s) => s.slug === slug);
+  const next = all[(idx + 1) % all.length];
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: meta.title,
+    description: meta.summary,
+    url: `${SITE.url}/case-studies/${slug}`,
+    author: { "@type": "Person", name: SITE.name, url: SITE.url },
+    keywords: meta.tags.join(", "),
+  };
 
   return (
-    <main className="min-h-screen bg-[#FAFAF9] dark:bg-[#0A0A0F] pt-24 pb-20 px-6">
-      <div className="max-w-3xl mx-auto">
+    <Container className="max-w-3xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }}
+      />
+      <nav aria-label="Breadcrumb" className="pt-10 sm:pt-14">
+        <ol className="flex flex-wrap items-center gap-1.5 font-mono text-xs text-subtle">
+          <li>
+            <Link href="/" className="hover:text-fg">
+              ~
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link href="/case-studies" className="hover:text-fg">
+              case-studies
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" className="text-muted">
+            {slug}
+          </li>
+        </ol>
+      </nav>
 
-        {/* Back link */}
-        <Link
-          href="/case-studies"
-          className="text-sm text-[#6B7280] dark:text-[#94A3B8]
-                     hover:text-cyan-600 dark:hover:text-cyan-400
-                     transition mb-10 inline-block"
-        >
-          ← All case studies
-        </Link>
-
-        {/* Header */}
-        <div className="mb-12">
-          <div className="flex flex-wrap gap-2 mb-4">
-            {meta!.tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-2 py-0.5 text-xs rounded-full
-                           bg-[#F3F4F6] dark:bg-[#1E1E2E]
-                           text-[#374151] dark:text-[#E2E8F0]"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <h1 className="text-3xl md:text-4xl font-extrabold
-                         text-[#111827] dark:text-[#F1F5F9] mb-4 leading-tight">
-            {meta!.title}
-          </h1>
-
-          <p className="text-[#6B7280] dark:text-[#94A3B8] text-lg mb-4">
-            {meta!.summary}
-          </p>
-
-          <p className="text-sm text-[#9CA3AF] dark:text-[#64748B]">
-            {meta!.date} · {meta!.readTime}
-          </p>
-
-          <div className="mt-8 border-t border-[#E5E7EB] dark:border-[#1E1E2E]" />
+      <header className="border-b border-line pb-8 pt-6">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <StatusBadge status={meta.status} />
+          <span className="font-mono text-xs text-subtle">{meta.readTime}</span>
         </div>
+        <h1 className="text-3xl font-semibold leading-tight text-fg sm:text-4xl">{meta.title}</h1>
+        <p className="mt-4 text-lg leading-relaxed text-muted">{meta.summary}</p>
+        <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Topics">
+          {meta.tags.map((t) => (
+            <li key={t}>
+              <Tag>{t}</Tag>
+            </li>
+          ))}
+        </ul>
+      </header>
 
-        {/* MDX Content */}
-        <article className="prose prose-neutral dark:prose-invert
-                            prose-headings:font-bold
-                            prose-headings:text-[#111827] dark:prose-headings:text-[#F1F5F9]
-                            prose-p:text-[#374151] dark:prose-p:text-[#CBD5E1]
-                            prose-code:text-cyan-600 dark:prose-code:text-cyan-400
-                            prose-pre:bg-[#111118] prose-pre:border
-                            prose-pre:border-[#1E1E2E]
-                            prose-a:text-cyan-600 dark:prose-a:text-cyan-400
-                            prose-strong:text-[#111827] dark:prose-strong:text-white
-                            prose-li:text-[#374151] dark:prose-li:text-[#CBD5E1]
-                            max-w-none">
-          <MDXContent source={content!} />
-        </article>
+      <article className="prose prose-invert prose-case mt-10 max-w-none">
+        <MDXRemote
+          source={content}
+          components={mdxComponents}
+          options={{ mdxOptions: { remarkPlugins: [remarkGfm], rehypePlugins: [rehypeHighlight] } }}
+        />
+      </article>
 
-        {/* Footer CTA */}
-        <div className="mt-16 pt-8 border-t border-[#E5E7EB] dark:border-[#1E1E2E]">
-          <p className="text-[#6B7280] dark:text-[#94A3B8] mb-4">
-            Interested in working together on security-critical infrastructure?
-          </p>
-          <Link
-            href="/#contact"
-            className="inline-flex items-center px-6 py-3 bg-cyan-600
-                       hover:bg-cyan-700 rounded-lg text-white font-medium transition"
-          >
-            Get in touch
+      <aside className="mt-16 rounded-xl border border-line bg-surface p-6">
+        <p className="text-sm text-subtle">
+          Methods and classes of problem only. No identifiers, counts or open findings from any real environment are
+          published here.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+          <Link href="/case-studies" className="text-sm text-muted hover:text-fg">
+            ← All case studies
           </Link>
+          {next && next.slug !== slug ? (
+            <Link href={`/case-studies/${next.slug}`} className="text-sm text-accent hover:text-accent-strong">
+              Next: {next.title} →
+            </Link>
+          ) : null}
         </div>
-
-      </div>
-    </main>
+      </aside>
+    </Container>
   );
 }

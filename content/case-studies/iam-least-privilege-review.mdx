@@ -1,0 +1,77 @@
+---
+title: "Least-privilege review across an AWS account"
+slug: iam-least-privilege-review
+summary: "A repeatable, read-only method for reviewing IAM across a whole account: collect, analyse offline, confirm every suspected path with the policy simulator, then compare granted with used permissions."
+tags: ["IAM", "Least privilege", "Access Analyzer", "Policy simulator"]
+status: in-progress
+order: 3
+featured: true
+---
+
+<p className="lead">This page describes the method only. It deliberately says nothing about what the review found.</p>
+
+## Context
+
+An account-wide IAM least-privilege review of a production AI platform on AWS, complementing SOC 2 work on IAM hygiene: no directly attached user policies, access-key age controls, and replacing static credentials.
+
+## Problem
+
+Hygiene controls catch the obvious issues. They don't tell you what any given principal can *actually* do once every policy, trust relationship and boundary is taken into account, and that is the question least privilege has to answer.
+
+## Risk
+
+The risks in IAM are rarely single statements. They come from combinations: a broad action here, a missing condition there, a trust policy that lets one role become another. A review that reads policies one at a time, or that reports issues without confirming them, either misses these or produces noise that nobody can act on.
+
+## Approach
+
+The review runs in four stages and is **read-only throughout**. Nothing in the account is changed to perform it.
+
+**1. Collect (read-only).**
+
+- Account authorization details: users, groups, roles, and every managed and inline policy
+- The credential report
+- Service-last-accessed data
+- IAM Access Analyzer findings
+
+**2. Analyse offline.** The collected data is analysed away from the account, statement by statement, for known risk patterns:
+
+| Check | What it looks for |
+| --- | --- |
+| Wildcards | `*` in actions or resources where something narrower is possible |
+| `NotAction` | Allow statements defined by exclusion, which grant more than they appear to |
+| Unconditioned `iam:PassRole` | Passing roles without constraining which role or to which service |
+| Escalation primitives | Actions known to let a principal raise its own privileges |
+| Trust policies | Who can assume what, and under which conditions |
+| Permission boundaries | Where they apply, and whether they actually bound anything |
+
+**3. Confirm with the IAM policy simulator.** Static analysis only produces *suspicions*. Each suspected path is tested with the IAM policy simulator before it counts as a finding, so nothing is reported on the strength of a pattern match alone.
+
+<Illustrative>
+
+```bash
+# Illustrative: confirming a suspected path with the policy simulator.
+# Placeholders only; this does not change anything in the account.
+aws iam simulate-principal-policy \
+  --policy-source-arn "<principal-under-review>" \
+  --action-names "<action-to-test>" \
+  --resource-arns "<resource-to-test>" \
+  --query 'EvaluationResults[].{action:EvalActionName,decision:EvalDecision}'
+```
+
+</Illustrative>
+
+**4. Granted vs. used.** For high-risk roles, a follow-up analysis compares what is *granted* with what is *used*, using IAM Access Advisor and CloudTrail. The difference is the candidate set for removal, backed by evidence rather than guesswork.
+
+## Validation
+
+Simulation is the validation step: every reported finding has been confirmed by the IAM policy simulator. The granted-vs-used stage adds a second, independent kind of evidence for the roles where it matters most.
+
+## Outcome
+
+A repeatable, evidence-backed review method, with every finding confirmed by simulation before it was reported.
+
+## Lessons
+
+- **Collect once, analyse many times.** Working offline from a read-only snapshot makes the analysis repeatable and keeps the review from changing what it is reviewing.
+- **A pattern match is a lead, not a finding.** Confirmation by simulation is what makes a report worth acting on.
+- **"Granted" and "used" are different questions.** Least privilege needs both answered.

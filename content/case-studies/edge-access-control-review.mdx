@@ -1,0 +1,40 @@
+---
+title: "Edge access-control review"
+slug: edge-access-control-review
+summary: "Reviewed edge access controls across CDN distributions, closed gaps where content was reachable outside the intended entry point, and enforced the fix in infrastructure as code."
+tags: ["Edge security", "CDN", "Infrastructure as code"]
+status: complete
+order: 4
+featured: false
+---
+
+<p className="lead">This page is intentionally brief. Specifics are omitted.</p>
+
+## Context
+
+A production AI platform on AWS serves content through CDN distributions, with the edge as the intended way in.
+
+## Problem
+
+Content was reachable outside the intended entry point.
+
+## Risk
+
+Controls placed at an entry point only protect traffic that actually passes through it. Any other path to the same content is a path around those controls.
+
+## Approach
+
+Reviewed edge access controls across CDN distributions, closed gaps where content was reachable outside the intended entry point, and enforced the fix in infrastructure as code.
+
+## Validation
+
+<Todo>confirm how the fix was validated before publishing this section</Todo>
+
+## Outcome
+
+The gaps are closed, and the fix is held in infrastructure as code, so a later change can't quietly reopen the gap.
+
+## Lessons
+
+- **Review every path to the content, not just the front door.** The intended entry point is only one of the ways in.
+- **Put the fix in code.** An access-control fix applied by hand is one console change away from being undone.
