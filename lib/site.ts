@@ -39,12 +39,8 @@ export const LINKS = {
   linkedin: process.env.NEXT_PUBLIC_LINKEDIN || "https://www.linkedin.com/in/julius-gachuhi/",
   // TODO(julius): confirm this is the GitHub profile you want public (taken from this repo's git history).
   github: process.env.NEXT_PUBLIC_GITHUB || "https://github.com/Julius-717",
-  /**
-   * TODO(julius): provide an updated CV. The existing public/pdf/Julius_Gachuhi_Resume.pdf
-   * contradicts the verified timeline and contains unverified metrics, so it is
-   * deliberately not linked. Set this to "/pdf/<file>.pdf" once a new CV is in place.
-   */
-  cv: null as string | null,
+  /** Generated from cv/cv.html with `npm run cv:pdf`. */
+  cv: "/pdf/Julius_Gachuhi_CV.pdf" as string | null,
 } as const;
 
 export const NAV = [

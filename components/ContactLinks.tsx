@@ -16,6 +16,7 @@ export default function ContactLinks({ className = "", showTodos = false }: { cl
     { label: "GitHub", href: LINKS.github, external: true },
     { label: "LinkedIn", href: LINKS.linkedin, external: true },
     { label: "Email", href: LINKS.email ? `mailto:${LINKS.email}` : null, external: false },
+    { label: "CV (PDF)", href: LINKS.cv, external: false },
   ];
 
   return (

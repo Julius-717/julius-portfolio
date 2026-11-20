@@ -62,6 +62,8 @@ const nextConfig: NextConfig = {
         destination: "/case-studies/iam-least-privilege-review",
         permanent: true,
       },
+      // The old resume was replaced; keep links shared elsewhere working.
+      { source: "/pdf/Julius_Gachuhi_Resume.pdf", destination: "/pdf/Julius_Gachuhi_CV.pdf", permanent: true },
       // Hidden (draft) case study.
       { source: "/case-studies/edge-access-control-review", destination: "/case-studies", permanent: false },
       ...retired.map((slug) => ({

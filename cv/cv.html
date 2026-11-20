@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Julius Gachuhi - CV</title>
+<meta name="author" content="Julius Gachuhi">
+<meta name="description" content="Cloud Security Engineer | DevSecOps | AWS, IAM, Application Security">
+<!--
+  Source for public/pdf/Julius_Gachuhi_CV.pdf. Regenerate with: npm run cv:pdf
+  ATS notes: single column, real text, standard section headings, no tables,
+  images or text boxes; acronyms spelled out once.
+-->
+<style>
+  @page { size: A4; margin: 14mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, Helvetica, sans-serif; color: #111; font-size: 9.6pt; line-height: 1.38; margin: 0; }
+  h1 { font-size: 20pt; margin: 0; letter-spacing: 0.2px; }
+  .title { font-size: 11pt; font-weight: 600; margin: 2px 0 4px; color: #1d4ed8; }
+  .contact { font-size: 9pt; color: #333; margin: 0 0 6px; }
+  a { color: #1d4ed8; text-decoration: none; }
+  h2 { font-size: 10.5pt; text-transform: uppercase; letter-spacing: 0.6px; color: #0b1220;
+       border-bottom: 1.2px solid #1d4ed8; padding-bottom: 2px; margin: 12px 0 6px; }
+  p { margin: 0 0 4px; }
+  .org { font-weight: 700; margin: 0; }
+  .role { font-weight: 600; margin: 6px 0 2px; }
+  .muted { color: #444; font-weight: 400; }
+  ul { margin: 2px 0 4px; padding-left: 15px; }
+  li { margin: 0 0 2.5px; }
+  li, .role, h2 { break-inside: avoid; }
+  h2 { break-after: avoid; }
+  .nw { white-space: nowrap; } /* keep hyphenated keywords intact for ATS parsing */
+</style>
+</head>
+<body>
+  <h1>Julius Gachuhi</h1>
+  <p class="title">Cloud Security Engineer | DevSecOps | AWS · IAM · Application Security</p>
+  <p class="contact">
+    Nairobi, Kenya · Open to remote roles worldwide ·
+    LinkedIn: <a href="https://www.linkedin.com/in/julius-gachuhi/">linkedin.com/in/julius-gachuhi</a> ·
+    GitHub: <a href="https://github.com/Julius-717">github.com/Julius-717</a> ·
+    Portfolio: <a href="https://www.juliusgachuhi.com">juliusgachuhi.com</a>
+  </p>
+
+  <h2>Summary</h2>
+  <p>Cloud Security and DevSecOps Engineer with 4+ years of engineering experience at a production AI SaaS company, now owning its secure software development lifecycle (SSDLC) on AWS. Implemented SOC 2 security controls across logging, threat detection, network, data protection and identity, and led an account-wide IAM <span class="nw">least-privilege</span> review. Builds CI/CD security tooling (SAST, SCA, DAST) as infrastructure as code with <span class="nw">least-privilege</span> roles and audit-ready evidence. Background in cross-platform mobile and software engineering.</p>
+
+  <h2>Professional Experience</h2>
+  <p class="org">Enquire AI <span class="muted">| Remote (Nairobi, Kenya) | Mar 2022 – Present</span></p>
+
+  <p class="role">Cloud Security Engineer / DevOps Engineer <span class="muted">| Jan 2026 – Present</span></p>
+  <ul>
+    <li>Own the secure software development lifecycle (SSDLC) since Sep 2026: rebuilt security scanning as scheduled AWS CodeBuild projects defined in OpenTofu (Terraform-compatible infrastructure as code), each with a dedicated <span class="nw">least-privilege</span> IAM role, all writing to a single evidence store with notifications.</li>
+    <li>Integrated Static Application Security Testing (SAST) with SonarQube, migrated off Jenkins; Software Composition Analysis (SCA) with OWASP <span class="nw">Dependency-Check</span> (nightly); Dynamic Application Security Testing (DAST) with Nuclei (weekly); Dependabot dependency monitoring with a weekly alerts report; and k6 API smoke tests (nightly). Surfaced scan results in the product UI.</li>
+    <li>Designed a <span class="nw">fail-closed</span> DAST gate that records evidence before deciding and blocks on critical findings, dropped targets, coverage under 98% or unparseable output, with a self-test mode that proves the gate blocks.</li>
+    <li>Implemented SOC 2 security controls on AWS: CloudTrail, CloudWatch, AWS Config and Security Hub with Slack alerting; GuardDuty and Amazon Inspector for threat detection and vulnerability scanning; NACL hardening, VPC endpoints and private subnets; AWS WAF with CloudFront and HTTPS-only; S3 encryption (SSE-KMS), Block Public Access, access logging, versioning, lifecycle policies and replication; AWS Backup; IMDSv2 and SSM Agent on EC2.</li>
+    <li>Led an account-wide IAM <span class="nw">least-privilege</span> review: read-only collection (authorization details, credential report, service-last-accessed, IAM Access Analyzer), offline policy analysis for wildcards, NotAction, unconditioned PassRole, <span class="nw">privilege-escalation</span> paths, trust policies and permission boundaries; confirmed every finding with the IAM policy simulator; compared granted vs. used permissions with Access Advisor and CloudTrail.</li>
+    <li>Enforced identity and access management (IAM) hygiene and role-based access control (RBAC): removed directly attached user policies, added access-key age controls, replaced static credentials, and moved engineer access from SSH keys and jumpboxes to AWS Systems Manager Session Manager with setup scripts for macOS, Linux and Windows.</li>
+    <li>Adopted hand-built AWS resources into OpenTofu with import blocks, wrote <span class="nw">SOC 2-compliant</span> provisioning workflows per AWS service with verification steps, and enforced infrastructure change governance through CI/CD pipelines (GitHub Actions, Bitrise).</li>
+    <li>Authored SOC 2 compliance documentation: Access Control Policy, Incident Response Plan, Backup and Disaster Recovery Procedures, Logging and Monitoring Standards, and Secure SDLC workflows.</li>
+    <li>Fixed a silent failure in a Python AWS Lambda batch job; added a <span class="nw">partial-success</span> status, per-item CloudWatch Embedded Metric Format (EMF) metrics and a CloudWatch alarm defined in infrastructure as code.</li>
+    <li>Application security and vulnerability management: remediated an XSS vulnerability (Jinja2 autoescape), moved secrets and configuration out of the codebase into environment variables, authored WAF rules for public API endpoints, and remediated CVEs in Python Lambda layers and npm/Angular/Ionic dependencies; moved CI base images off unauthenticated Docker Hub pulls.</li>
+  </ul>
+
+  <p class="role">Mobile Platform Engineer <span class="muted">| Mar 2022 – Dec 2025</span></p>
+  <ul>
+    <li>Led end-to-end development of a cross-platform mobile application (Ionic, Angular, Capacitor), delivered within 6 months, and launched it on the Google Play Store and Apple App Store.</li>
+    <li>Migrated authentication to Auth0 single sign-on (SSO) with OAuth 2.0, and built WebSocket-based real-time communication and AI API integrations.</li>
+    <li>Ran release-test bug rounds and hotfixes, set up signing-certificate management, built identity-verification data capture, and upgraded Google Play Billing via RevenueCat.</li>
+    <li>Remediated dependency CVEs across the mobile codebase.</li>
+  </ul>
+
+  <h2>Selected Projects</h2>
+  <p>Full case studies at <a href="https://www.juliusgachuhi.com/case-studies">juliusgachuhi.com/case-studies</a></p>
+  <ul>
+    <li><strong>Fail-closed DAST gate:</strong> evidence-first security gate with a self-test that proves it blocks.</li>
+    <li><strong>Secure SDLC pipeline:</strong> SAST, SCA, DAST and API smoke tests as IaC-managed, <span class="nw">least-privilege</span> AWS CodeBuild projects.</li>
+    <li><strong>AWS IAM <span class="nw">least-privilege</span> review:</strong> repeatable, read-only review method with every finding confirmed by the IAM policy simulator.</li>
+    <li><strong>Silent pipeline failure fix:</strong> <span class="nw">partial-success</span> status, CloudWatch EMF metrics and an alarm in IaC.</li>
+    <li><strong>SSH to SSM Session Manager migration:</strong> keyless, IAM-authorised access replacing jumpboxes.</li>
+  </ul>
+
+  <h2>Technical Skills</h2>
+  <ul>
+    <li><strong>Cloud security (AWS):</strong> IAM, CloudTrail, CloudWatch, AWS Config, Security Hub, GuardDuty, Amazon Inspector, AWS WAF, CloudFront, VPC, NACLs, VPC endpoints, S3, KMS (SSE-KMS), AWS Backup, EC2 (IMDSv2), Lambda, Systems Manager (Session Manager)</li>
+    <li><strong>Identity and access management:</strong> least privilege, RBAC, IAM Access Analyzer, IAM policy simulator, Access Advisor, trust policies, permission boundaries, OAuth 2.0, Auth0, SSO</li>
+    <li><strong>DevSecOps and CI/CD:</strong> secure SDLC, SAST (SonarQube), SCA (OWASP <span class="nw">Dependency-Check</span>, Snyk), DAST (Nuclei), Dependabot, k6, AWS CodeBuild, GitHub Actions, Bitrise, Jenkins, Docker</li>
+    <li><strong>Infrastructure as code:</strong> OpenTofu (Terraform-compatible HCL), brownfield import, CloudWatch alarms and EMF metrics as code</li>
+    <li><strong>Governance and compliance:</strong> SOC 2 controls, security policy writing, incident response planning, backup and disaster recovery, logging and monitoring standards, vulnerability management, CVE remediation</li>
+    <li><strong>Programming and platforms:</strong> Python, TypeScript, JavaScript, Dart, Angular, Ionic, Capacitor, Flutter, WebSockets</li>
+  </ul>
+
+  <h2>Education</h2>
+  <ul>
+    <li><strong>MSc Cyber Security</strong> | University of Essex | Starting Jan 2027</li>
+    <li><strong>Full-Stack Software Development</strong> | Moringa School</li>
+  </ul>
+
+  <h2>Certifications</h2>
+  <ul>
+    <li><strong>AH Cyber Swara-200 (Cybersecurity &amp; Penetration Testing)</strong> | Africa Hackon Academy | 2025 | <a href="https://www.credly.com/badges/6f22cdbc-2228-4f69-893e-8ca1533bb9d0/public_url">Verify on Credly</a></li>
+  </ul>
+</body>
+</html>

@@ -16,7 +16,8 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const EMPLOYER = /enquire/i;
-const EMPLOYER_ALLOWED_SOURCE = new Set(["lib/site.ts"]);
+// The CV names the employer in its Experience section, like the Experience page.
+const EMPLOYER_ALLOWED_SOURCE = new Set(["lib/site.ts", "cv/cv.html"]);
 // Built output for the /experience route (html, rsc and its segment files).
 const EMPLOYER_ALLOWED_PAGE = /^\.next\/server\/app\/experience(\.|\/)/;
 

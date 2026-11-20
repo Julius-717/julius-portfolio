@@ -8,7 +8,8 @@
     "start": "next start",
     "check:confidential": "node scripts/check-confidential.mjs",
     "check:todos": "node scripts/check-todos.mjs",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "cv:pdf": "node scripts/build-cv.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
