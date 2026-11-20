@@ -1,305 +1,155 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 @import "highlight.js/styles/github-dark.css";
 
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * Design tokens. Dark-only, terminal-inspired, deliberately low-saturation.
+ * Contrast against --color-bg (#0b0e14):
+ *   fg      #e6eaf2  ~15.9:1
+ *   muted   #a7b0c0  ~ 8.6:1
+ *   subtle  #8591a6  ~ 5.9:1  (still AA for body text)
+ *   accent  #67d4ea  ~10.9:1
+ */
+@theme {
+  --color-bg: #0b0e14;
+  --color-surface: #11161f;
+  --color-surface-2: #171d29;
+  --color-line: #232b3a;
+  --color-line-strong: #33405a;
+  --color-fg: #e6eaf2;
+  --color-muted: #a7b0c0;
+  --color-subtle: #8591a6;
+  --color-accent: #67d4ea;
+  --color-accent-strong: #9be4f3;
+  --color-ok: #7ee0a8;
+  --color-warn: #f0c060;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-jetbrains: var(--font-jetbrains-mono);
-  --font-space: var(--font-space-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-}
-
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-
-  /* DevSecOps palette */
-  --ds-bg: #060810;
-  --ds-surface: #0d1220;
-  --ds-border: rgba(0, 200, 255, 0.12);
-  --ds-cyan: #00c8ff;
-  --ds-green: #00ff9d;
-  --ds-orange: #ff6b35;
-  --ds-white: #e8eeff;
-  --ds-muted: #5a6a8a;
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html {
+    color-scheme: dark;
+    background-color: var(--color-bg);
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
   }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+    color: var(--color-fg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
-/* ─── Custom cursor ─────────────────────────────────────────── */
-body { cursor: none; }
-a, button, [role="button"] { cursor: none; }
-
-.cursor-dot, .cursor-ring {
-  cursor: none;
-  pointer-events: none;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-@media (pointer: coarse) {
-  body, a, button, * { cursor: auto !important; }
-  .cursor-dot, .cursor-ring { display: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-/* ─── Grid overlay ──────────────────────────────────────────── */
-.ds-page-wrapper::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+/* Faint grid behind the hero only: a nod to the terminal look, no animation. */
+.bg-grid {
   background-image:
-    linear-gradient(rgba(0, 200, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 200, 255, 0.035) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(to right, color-mix(in srgb, var(--color-accent) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-accent) 5%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at top left, #000 30%, transparent 75%);
 }
 
-/* ─── Scanline animation ────────────────────────────────────── */
-.ds-page-wrapper::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 200, 255, 0.018) 50%,
-    transparent 100%
-  );
-  background-size: 100% 4px;
-  animation: scanlines 8s linear infinite;
+/* ─── Long-form case study typography ─────────────────────────── */
+.prose-case {
+  --tw-prose-body: var(--color-muted);
+  --tw-prose-headings: var(--color-fg);
+  --tw-prose-lead: var(--color-muted);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-fg);
+  --tw-prose-counters: var(--color-subtle);
+  --tw-prose-bullets: var(--color-line-strong);
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-quotes: var(--color-fg);
+  --tw-prose-quote-borders: var(--color-accent);
+  --tw-prose-captions: var(--color-subtle);
+  --tw-prose-code: var(--color-accent-strong);
+  --tw-prose-pre-code: var(--color-fg);
+  --tw-prose-pre-bg: var(--color-surface);
+  --tw-prose-th-borders: var(--color-line-strong);
+  --tw-prose-td-borders: var(--color-line);
+  font-size: 1.0625rem;
+  line-height: 1.75;
 }
 
-@keyframes scanlines {
-  0%   { background-position: 0 0; }
-  100% { background-position: 0 100vh; }
+.prose-case h2 {
+  font-size: 1.375rem;
+  margin-top: 2.75em;
+  padding-top: 1.25em;
+  border-top: 1px solid var(--color-line);
 }
 
-/* ─── Status dot pulse ──────────────────────────────────────── */
-@keyframes statusPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(1.5); }
+.prose-case h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
-.status-pulse {
-  animation: statusPulse 2s ease-in-out infinite;
+.prose-case pre {
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.65;
 }
 
-/* ─── Orbiting badges ───────────────────────────────────────── */
-@keyframes orbitRotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+.prose-case pre code.hljs {
+  background: transparent;
+  padding: 0;
 }
 
-@keyframes counterRotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(-360deg); }
+.prose-case :not(pre) > code {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 0.375rem;
+  padding: 0.1em 0.35em;
+  font-weight: 500;
 }
 
-.orbit-ring {
-  animation: orbitRotate 20s linear infinite;
+.prose-case :not(pre) > code::before,
+.prose-case :not(pre) > code::after {
+  content: none;
 }
 
-.orbit-badge {
-  animation: counterRotate 20s linear infinite;
-}
-
-/* ─── Shimmer button ────────────────────────────────────────── */
-.btn-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-shimmer::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.35) 50%,
-    transparent 100%
-  );
-  transition: left 0.5s ease;
-}
-
-.btn-shimmer:hover::before {
-  left: 150%;
-}
-
-/* ─── Stats strip hover bar ─────────────────────────────────── */
-.stat-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  transition: width 0.4s ease;
-}
-
-.stat-card:hover::before {
-  width: 100%;
-}
-
-.stat-card-cyan::before  { background: var(--ds-cyan); }
-.stat-card-green::before { background: var(--ds-green); }
-.stat-card-orange::before { background: var(--ds-orange); }
-
-/* ─── Terminal blink cursor ─────────────────────────────────── */
-@keyframes termBlink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
-}
-
-.term-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 1em;
-  background: var(--ds-green);
-  vertical-align: text-bottom;
-  animation: termBlink 1s step-end infinite;
-}
-
-/* ─── Hex clip ──────────────────────────────────────────────── */
-.hex-clip {
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
-
-/* ─── Smooth transitions (non-animation props only) ─────────── */
-*, *::before, *::after {
-  transition-property: background-color, border-color, color;
-  transition-duration: 300ms;
-  transition-timing-function: ease;
-}
-
-.motion-safe\:transition-none {
-  transition: none !important;
-}
-
-/* ─── Scrollbar hide ────────────────────────────────────────── */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.prose-case table {
+  font-size: 0.9375rem;
 }
