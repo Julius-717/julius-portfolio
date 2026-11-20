@@ -11,7 +11,7 @@ import { EMPLOYER_NAME } from "@/lib/site";
 export interface SubRole {
   title: string;
   current: boolean;
-  /** null = not yet confirmed; rendered as a visible TODO. */
+  /** null = not yet confirmed; the period is simply not shown. */
   period: string | null;
 }
 
@@ -27,9 +27,8 @@ export const EMPLOYMENT = {
   location: "Remote · Nairobi, Kenya",
   period: "Mar 2022 – present",
   roles: [
-    // TODO(julius): confirm exact sub-role dates.
-    { title: "Cloud Security Engineer / DevOps Engineer", current: true, period: null },
-    { title: "Mobile Platform Engineer", current: false, period: null },
+    { title: "Cloud Security Engineer / DevOps Engineer", current: true, period: "Jan 2026 – present" },
+    { title: "Mobile Platform Engineer", current: false, period: "Mar 2022 – Dec 2025" },
   ] satisfies SubRole[],
 };
 
@@ -70,12 +69,15 @@ export const PHASES: Phase[] = [
     ],
   },
   {
-    period: "Late 2025 – mid 2026",
-    title: "Mobile engineering",
+    period: "Mar 2022 – Dec 2025",
+    title: "Mobile platform engineering",
     groups: [
       {
         items: [
-          "App store launch",
+          "Led end-to-end development of a cross-platform mobile app (Ionic, Angular, Capacitor), delivered within 6 months",
+          "Migrated authentication to Auth0 single sign-on with OAuth 2.0",
+          "Built WebSocket-based real-time communication and AI API integrations",
+          "App store launch on Google Play and the Apple App Store",
           "Release-test bug rounds and hotfixes",
           "Identity-verification data capture",
           "Google Play Billing upgrade via RevenueCat",
@@ -89,6 +91,11 @@ export const PHASES: Phase[] = [
 
 /** Other verified work, not tied to a single phase. */
 export const OTHER_WORK: { title: string; detail: string; caseStudy?: string }[] = [
+  {
+    title: "SOC 2 documentation and change governance",
+    detail:
+      "Authored the Access Control Policy, Incident Response Plan, Backup and Disaster Recovery Procedures, Logging and Monitoring Standards and Secure SDLC workflows; routed infrastructure changes through CI/CD pipelines (GitHub Actions, Bitrise).",
+  },
   {
     title: "Account-wide IAM least-privilege review",
     detail:

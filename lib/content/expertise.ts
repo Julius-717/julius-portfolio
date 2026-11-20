@@ -93,9 +93,10 @@ export const DOMAINS: Domain[] = [
     title: "Software Engineering",
     summary: "Where I started: shipping mobile apps, and the engineering habits I bring to security tooling.",
     skills: [
-      { name: "Mobile", detail: "Ionic, Angular, Capacitor, TypeScript", level: "professional" },
+      { name: "Mobile", detail: "Ionic, Angular, Capacitor, TypeScript; Flutter and Dart", level: "professional" },
       { name: "Release engineering", detail: "App store launch, release-test bug rounds and hotfixes, signing-certificate management", level: "professional" },
       { name: "Payments", detail: "Google Play Billing upgrade via RevenueCat", level: "professional" },
+      { name: "Authentication", detail: "Auth0 single sign-on with OAuth 2.0; WebSocket real-time communication", level: "professional" },
       { name: "Python", detail: "AWS Lambda batch processing and reliability fixes", level: "professional" },
     ],
   },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EMPLOYMENT, OTHER_WORK, PHASES } from "@/lib/content/experience";
 import { getAllCaseStudies } from "@/lib/case-studies";
-import { Container, PageHeader, SHOW_TODOS, Todo } from "@/components/ui";
+import { Container, PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Experience",
@@ -38,7 +38,7 @@ export default function ExperiencePage() {
             <li key={r.title} className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className={`font-medium ${r.current ? "text-fg" : "text-muted"}`}>{r.title}</span>
               {r.current ? <span className="font-mono text-xs text-ok">current</span> : <span className="font-mono text-xs text-subtle">prior</span>}
-              {r.period ? <span className="font-mono text-xs text-subtle">{r.period}</span> : <Todo>sub-role dates</Todo>}
+              {r.period ? <span className="font-mono text-xs text-subtle">{r.period}</span> : null}
             </li>
           ))}
         </ul>
@@ -77,18 +77,6 @@ export default function ExperiencePage() {
               ) : null}
             </li>
           ))}
-          {SHOW_TODOS ? (
-          <li className="relative">
-            <span
-              aria-hidden="true"
-              className="absolute -left-[1.85rem] top-1.5 h-3 w-3 rounded-full border-2 border-line-strong bg-bg sm:-left-[2.35rem]"
-            />
-            <p className="font-mono text-sm text-subtle">Mar 2022 – late 2025</p>
-            <p className="mt-2 text-muted">
-              <Todo>earlier mobile-platform work: confirm what to include for this period</Todo>
-            </p>
-          </li>
-          ) : null}
         </ol>
       </article>
 
