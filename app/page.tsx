@@ -23,8 +23,10 @@ export default function Home() {
 
   return (
     <>
-      <section aria-labelledby="hero-title" className="relative overflow-hidden border-b border-line">
+      <section aria-labelledby="hero-title" className="relative overflow-hidden">
+        <div aria-hidden="true" className="hero-wash pointer-events-none absolute inset-0" />
         <div aria-hidden="true" className="bg-grid pointer-events-none absolute inset-0" />
+        <div aria-hidden="true" className="bg-gradient-primary absolute inset-x-0 bottom-0 h-px opacity-70" />
         <Container className="relative py-16 sm:py-24">
           <p className="font-mono text-sm text-muted">
             <span aria-hidden="true" className="text-accent">
@@ -71,7 +73,7 @@ export default function Home() {
           </h2>
           <ul className="grid gap-3 md:grid-cols-3">
             {NOW.map((n) => (
-              <li key={n.text} className="rounded-lg border border-line bg-surface px-4 py-3">
+              <li key={n.text} className="rounded-lg border border-line bg-surface px-4 py-3 shadow-card">
                 <p className="font-mono text-xs text-warn">{n.status}</p>
                 <p className="mt-1 text-sm text-fg">{n.text}</p>
               </li>
@@ -93,7 +95,7 @@ export default function Home() {
           <ul className="grid gap-5 md:grid-cols-3">
             {featured.map((s) => (
               <li key={s.slug}>
-                <CaseStudyCard study={s} />
+                <CaseStudyCard study={s} featured />
               </li>
             ))}
           </ul>
@@ -110,7 +112,7 @@ export default function Home() {
               </Link>
             }
           />
-          <ul className="grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-px overflow-hidden rounded-xl border border-line bg-line shadow-card sm:grid-cols-2 lg:grid-cols-3">
             {DOMAINS.map((d) => (
               <li key={d.slug} className="bg-surface p-5">
                 <h3 className="font-medium text-fg">

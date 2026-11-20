@@ -143,8 +143,8 @@ export function ButtonLink({
     "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors";
   const styles =
     variant === "primary"
-      ? "bg-accent text-bg hover:bg-accent-strong"
-      : "border border-line-strong text-fg hover:border-accent hover:text-accent";
+      ? "bg-brand-strong text-fg shadow-card hover:bg-brand-deep"
+      : "border border-line-strong bg-surface/40 text-fg hover:border-brand hover:bg-surface";
   if (external || href.startsWith("mailto:") || href.endsWith(".pdf")) {
     return (
       <a

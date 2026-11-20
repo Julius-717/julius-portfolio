@@ -24,7 +24,7 @@ export default function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75">
+    <header className="sticky top-0 z-40 border-b border-line bg-nav/95 backdrop-blur supports-[backdrop-filter]:bg-nav/80">
       <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link
           href="/"
@@ -60,7 +60,7 @@ export default function SiteHeader() {
 
         <button
           type="button"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-line text-fg lg:hidden"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-line-strong bg-surface text-fg hover:border-brand lg:hidden"
           aria-expanded={open}
           aria-controls={menuId}
           onClick={() => setOpen((v) => !v)}
@@ -80,7 +80,7 @@ export default function SiteHeader() {
         id={menuId}
         aria-label="Primary"
         hidden={!open}
-        className="border-t border-line bg-bg lg:hidden"
+        className="border-t border-line bg-nav lg:hidden"
       >
         <ul className="mx-auto max-w-5xl px-5 py-3 sm:px-8">
           {NAV.map(({ href, label }) => {

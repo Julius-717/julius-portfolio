@@ -15,7 +15,7 @@ function Level({ level }: { level: Proficiency }) {
   return (
     <span
       className={`inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 font-mono text-[0.7rem] ${
-        pro ? "border-accent/40 text-accent" : "border-warn/40 text-warn"
+        pro ? "border-brand/40 bg-brand/10 text-brand-soft" : "border-warn/40 bg-warn/5 text-warn"
       }`}
     >
       {pro ? "professional" : "developing"}
@@ -68,7 +68,7 @@ export default function ExpertisePage() {
             key={d.slug}
             id={d.slug}
             aria-labelledby={`${d.slug}-title`}
-            className="scroll-mt-24 rounded-xl border border-line bg-surface p-5 sm:p-7"
+            className="scroll-mt-24 rounded-xl border border-line bg-surface p-5 shadow-card sm:p-7"
           >
             <h2 id={`${d.slug}-title`} className="text-xl font-semibold text-fg">
               {d.title}

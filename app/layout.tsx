@@ -4,6 +4,7 @@ import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { LINKS, SITE } from "@/lib/site";
+import { TOKENS } from "@/lib/design-tokens";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,7 +56,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0e14",
+  themeColor: TOKENS.nav,
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,

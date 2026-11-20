@@ -48,7 +48,7 @@ export default function ExperiencePage() {
             <li key={p.title} className="relative">
               <span
                 aria-hidden="true"
-                className="absolute -left-[1.85rem] top-1.5 h-3 w-3 rounded-full border-2 border-accent bg-bg sm:-left-[2.35rem]"
+                className="absolute -left-[1.85rem] top-1.5 h-3 w-3 rounded-full border-2 border-brand bg-bg sm:-left-[2.35rem]"
               />
               <p className="font-mono text-sm text-accent">{p.period}</p>
               <div className="mt-1 flex flex-wrap items-center gap-3">
@@ -99,7 +99,7 @@ export default function ExperiencePage() {
         </h2>
         <ul className="mt-6 grid gap-4 md:grid-cols-2">
           {OTHER_WORK.map((w) => (
-            <li key={w.title} className="rounded-xl border border-line bg-surface p-5">
+            <li key={w.title} className="rounded-xl border border-line bg-surface p-5 shadow-card">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-medium text-fg">{w.title}</h3>
                 {w.status ? <StatusBadge status={w.status} /> : null}

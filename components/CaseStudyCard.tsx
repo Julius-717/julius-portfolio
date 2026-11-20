@@ -5,13 +5,19 @@ import { StatusBadge, Tag } from "@/components/ui";
 export default function CaseStudyCard({
   study,
   headingLevel = 3,
+  featured = false,
 }: {
   study: CaseStudyMeta;
   headingLevel?: 2 | 3;
+  /** Adds the primary-gradient top highlight. Use for featured cards only. */
+  featured?: boolean;
 }) {
   const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
-    <article className="group relative flex h-full flex-col rounded-xl border border-line bg-surface p-5 transition-colors hover:border-line-strong sm:p-6">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface p-5 shadow-card transition-[border-color,box-shadow] hover:border-line-strong hover:shadow-raised sm:p-6">
+      {featured ? (
+        <span aria-hidden="true" className="bg-gradient-primary absolute inset-x-0 top-0 h-0.5" />
+      ) : null}
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <StatusBadge status={study.status} />
         <span className="font-mono text-xs text-subtle">{study.readTime}</span>

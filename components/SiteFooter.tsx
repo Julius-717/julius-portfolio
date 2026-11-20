@@ -8,7 +8,7 @@ export default function SiteFooter() {
   ].filter(Boolean) as { href: string; label: string }[];
 
   return (
-    <footer className="mt-24 border-t border-line">
+    <footer className="mt-24 border-t border-line bg-nav">
       <div className="mx-auto grid w-full max-w-5xl gap-8 px-5 py-10 sm:grid-cols-[1fr_auto] sm:px-8">
         <div>
           <p className="font-medium text-fg">{SITE.name}</p>

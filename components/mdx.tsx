@@ -39,7 +39,7 @@ function Box({
 }) {
   const stroke = {
     default: "stroke-line-strong",
-    accent: "stroke-accent",
+    accent: "stroke-brand",
     ok: "stroke-ok",
     warn: "stroke-warn",
   }[tone];
