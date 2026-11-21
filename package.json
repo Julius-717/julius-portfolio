@@ -12,7 +12,6 @@
     "cv:pdf": "node scripts/build-cv.mjs"
   },
   "dependencies": {
-    "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "next": "^16.1.2",
@@ -21,8 +20,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "rehype-highlight": "^7.0.2",
-    "remark-gfm": "^4.0.1",
-    "tailwind-merge": "^3.3.1"
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",
