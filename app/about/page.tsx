@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container, PageHeader, Todo } from "@/components/ui";
 import { CREDENTIALS } from "@/lib/content/credentials";
+import { hasNotes } from "@/lib/notes";
 import photo from "@/public/images/me.jpg";
 
 export const metadata: Metadata = {
@@ -133,13 +134,15 @@ export default function AboutPage() {
                 evidence, including proving that a gate actually blocks.
               </li>
             </ul>
-            <p className="mt-4 text-muted">
-              Independent research and writing will appear under{" "}
-              <Link href="/notes" className="text-accent underline underline-offset-4">
-                Notes
-              </Link>
-              , kept separate from professional work.
-            </p>
+            {hasNotes() ? (
+              <p className="mt-4 text-muted">
+                Independent labs and articles are under{" "}
+                <Link href="/notes" className="text-accent underline underline-offset-4">
+                  Notes
+                </Link>
+                , kept separate from professional work.
+              </p>
+            ) : null}
           </section>
         </div>
 

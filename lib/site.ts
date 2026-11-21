@@ -50,5 +50,3 @@ export const NAV = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-/** Footer-only links: pages that exist but don't earn a place in the header yet. */
-export const SECONDARY_NAV = [{ href: "/notes", label: "Notes" }] as const;
