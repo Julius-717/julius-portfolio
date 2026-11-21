@@ -11,14 +11,16 @@ function isActive(pathname: string, href: string) {
 
 export default function SiteHeader() {
   const pathname = usePathname() ?? "/";
-  const [open, setOpen] = useState(false);
+  // The menu remembers the page it was opened on, so navigating closes it.
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === pathname;
+  const setOpen = (next: boolean) => setOpenOn(next ? pathname : null);
   const menuId = useId();
 
-  // Close the menu on navigation and on Escape.
-  useEffect(() => setOpen(false), [pathname]);
+  // Close the menu on Escape.
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenOn(null);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
@@ -63,7 +65,7 @@ export default function SiteHeader() {
           className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-line-strong bg-surface text-fg hover:border-brand md:hidden"
           aria-expanded={open}
           aria-controls={menuId}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen(!open)}
         >
           <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

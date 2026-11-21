@@ -9,7 +9,8 @@
     "check:confidential": "node scripts/check-confidential.mjs",
     "check:todos": "node scripts/check-todos.mjs",
     "check:links": "node scripts/check-links.mjs",
-    "cv:pdf": "node scripts/build-cv.mjs"
+    "cv:pdf": "node scripts/build-cv.mjs",
+    "lint": "eslint ."
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -28,6 +29,8 @@
     "@types/node": "^25.0.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.6",
     "tailwindcss": "^4.1.13",
     "typescript": "^5"
   }
