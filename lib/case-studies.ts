@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { readingTime } from "@/lib/reading-time";
 
 const contentDir = path.join(process.cwd(), "content/case-studies");
 
@@ -14,11 +15,6 @@ export interface CaseStudyMeta {
   /** Drafts are excluded from listings, routes and the sitemap. */
   draft: boolean;
   readTime: string;
-}
-
-function readingTime(body: string) {
-  const words = body.replace(/```[\s\S]*?```/g, " ").split(/\s+/).filter(Boolean).length;
-  return `${Math.max(1, Math.round(words / 220))} min read`;
 }
 
 function parse(filename: string) {
